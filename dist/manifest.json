@@ -1,0 +1,22 @@
+{
+    "name": "TS Jira",
+    "version": "1.0.0",
+    "description": "Jira reporter for employees whose company using Jira",
+    "manifest_version": 3,
+    "icons": {
+        "16": "assets/icons/icon-16x16.png",
+        "32": "assets/icons/icon-32x32.png",
+        "48": "assets/icons/icon-48x48.png"
+    },
+    "action": {
+        "default_popup": "index.html"
+    },
+    "permissions": [
+        "tabs",
+        "cookies",
+        "storage"
+    ],
+    "host_permissions": [
+        "https://jira.fis.com.vn/*"
+    ]
+}

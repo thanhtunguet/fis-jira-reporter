@@ -1,0 +1,48 @@
+{
+    "compilerOptions": {
+        "allowJs": false,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "emitDecoratorMetadata": true,
+        "esModuleInterop": false,
+        "experimentalDecorators": true,
+        "inlineSourceMap": true,
+        "isolatedModules": false,
+        "jsx": "react-jsx",
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ESNext"
+        ],
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "outDir": "extension/build",
+        "paths": {
+            "src/*": [
+                "./src/*"
+            ],
+            "package.json": [
+                "./package.json"
+            ],
+            "manifest.json": [
+                "./dist/manifest.json"
+            ]
+        },
+        "resolveJsonModule": true,
+        "target": "ES5",
+        "typeRoots": [
+            "./node_modules/@types/"
+        ]
+    },
+    "exclude": [
+        ".git",
+        ".idea",
+        "extension",
+        "node_modules",
+        "README.md"
+    ],
+    "include": [
+        "src/",
+        "dist/manifest.json"
+    ]
+}
