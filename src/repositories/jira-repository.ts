@@ -81,7 +81,7 @@ export class JiraRepository extends Repository {
             },
           ],
           customfield_10103: date.format("YYYY-MM-DD"),
-          customfield_10306: "8",
+          customfield_10306: "8h",
         },
       })
       .pipe(Repository.responseMapToModel<Task>(Task));
