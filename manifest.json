@@ -9,7 +9,10 @@
         "48": "assets/icons/icon-48x48.png"
     },
     "action": {
-        "default_popup": "index.html"
+        "default_popup": "./src/index.html"
+    },
+    "background": {
+        "service_worker": "./src/background.ts"
     },
     "permissions": [
         "tabs",
@@ -18,5 +21,18 @@
     ],
     "host_permissions": [
         "https://jira.fis.com.vn/*"
+    ],
+    "options_ui": {
+        "page": "./src/options.html",
+        "open_in_tab": true
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "assets/screenshot-1.png",
+                "assets/jira.excel.template.xlsx"
+            ],
+            "matches": []
+        }
     ]
 }

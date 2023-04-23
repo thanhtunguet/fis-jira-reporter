@@ -1,82 +1,142 @@
-enum ProjectStatus {
-  ACTIVE = "active",
-  ARCHIVED = "archived",
-  COMPLETED = "completed",
+import { Moment } from "moment";
+import { Field, Model, MomentField, ObjectField } from "react3l";
+
+class LoginInfo extends Model {
+  @Field(Number)
+  failedLoginCount: number;
+
+  @Field(Number)
+  loginCount: number;
+
+  @MomentField()
+  lastFailedLoginTime: Moment;
+
+  @MomentField()
+  previousLoginTime: Moment;
 }
 
-class Project {
+export class User extends Model {
+  @Field(String)
+  self: string;
+
+  @Field(String)
+  name: string;
+
+  @ObjectField(LoginInfo)
+  loginInfo: LoginInfo;
+}
+
+class AvatarUrls extends Model {
+  @Field(String)
+  "48x48": string;
+
+  @Field(String)
+  "24x24": string;
+
+  @Field(String)
+  "16x16": string;
+
+  @Field(String)
+  "32x32": string;
+}
+
+class ProjectCategory extends Model {
+  @Field(String)
+  self: string;
+
+  @Field(String)
   id: string;
+
+  @Field(String)
+  name: string;
+
+  @Field(String)
+  description: string;
+}
+
+export class Project extends Model {
+  @Field(String)
+  expand: string;
+
+  @Field(String)
+  self: string;
+
+  @Field(String)
+  id: string;
+
+  @Field(String)
   key: string;
+
+  @Field(String)
   name: string;
-  description?: string;
-  status: ProjectStatus;
+
+  @ObjectField(AvatarUrls)
+  avatarUrls: AvatarUrls;
+
+  @ObjectField(ProjectCategory)
+  projectCategory: ProjectCategory;
 }
 
-enum ComponentAssigneeType {
-  PROJECT_LEAD = "projectLead",
-  UNASSIGNED = "unassigned",
-}
+export class Component extends Model {
+  @Field(String)
+  self: string;
 
-class Component {
+  @Field(String)
   id: string;
+
+  @Field(String)
   name: string;
-  description?: string;
-  leadUserName?: string;
-  assigneeType: ComponentAssigneeType;
-  projectId: string;
+
+  @Field(String)
+  description: string;
+
+  @Field(String)
+  assigneeType: string;
+
+  @Field(String)
+  realAssigneeType: string;
+
+  @Field(Boolean)
+  isAssigneeTypeValid: boolean;
+
+  @Field(String)
+  project: string;
+
+  @Field(Number)
+  projectId: number;
 }
 
-interface TypeOfWork {
-  name: string;
-  description?: string;
+export class Phase extends Model {
+  @Field(Number)
+  id: number;
+
+  @Field(Number)
+  categoryId: number;
+
+  @Field(String)
+  phaseValue: string;
 }
 
-enum PhaseStatus {
-  TO_DO = "toDo",
-  IN_PROGRESS = "inProgress",
-  DONE = "done",
+export enum TypeOfWork {
+  Create = "Create",
+  Correct = "Correct",
+  Study = "Study",
+  Review = "Review",
+  Test = "Test",
 }
 
-class Phase {
-  id: string;
-  name: string;
-  description?: string;
-  status: PhaseStatus;
-  projectId: string;
-  componentId?: string;
-  typeOfWork?: TypeOfWork;
+export interface ImportData {
+  date: Moment;
+
+  weekNum: number;
+
+  task: string;
 }
 
-class JiraAuthResponse {
-  accessToken: string;
-  tokenType: string;
-  expiresIn: number;
-  refreshToken: string;
-  scope: string;
-  accountId: string;
-  userName: string;
-  displayName: string;
-  email: string;
+export class Task extends Model {
+  @Field(Number)
+  id: number;
 
-  constructor(
-    accessToken: string,
-    tokenType: string,
-    expiresIn: number,
-    refreshToken: string,
-    scope: string,
-    accountId: string,
-    userName: string,
-    displayName: string,
-    email: string
-  ) {
-    this.accessToken = accessToken;
-    this.tokenType = tokenType;
-    this.expiresIn = expiresIn;
-    this.refreshToken = refreshToken;
-    this.scope = scope;
-    this.accountId = accountId;
-    this.userName = userName;
-    this.displayName = displayName;
-    this.email = email;
-  }
+  @Field(String)
+  key: string;
 }

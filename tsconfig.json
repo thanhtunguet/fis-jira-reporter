@@ -29,6 +29,7 @@
             ]
         },
         "resolveJsonModule": true,
+        "strict": false,
         "target": "ES5",
         "typeRoots": [
             "./node_modules/@types/"

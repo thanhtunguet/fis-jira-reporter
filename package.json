@@ -2,14 +2,34 @@
   "name": "jira-reporter",
   "version": "1.0.0",
   "description": "Jira Reporter, for employee whose company using Jira",
-  "main": "dist/index.js",
   "repository": "https://github.com/thanhtunguet/jira-reporter",
   "author": "thanhtunguet <thanhtung.uet@gmail.com>",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "start": "parcel manifest.json --config @parcel/config-webextension",
+    "build": "parcel build manifest.json --config @parcel/config-webextension"
+  },
+  "dependencies": {
+    "@swc/helpers": "^0.4.12",
+    "antd": "^5.4.4",
+    "axios": "~0.21",
+    "bootstrap": "^5.2.3",
+    "dayjs": "^1.11.7",
+    "i18next": "~20",
+    "moment": "^2.29.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "~10.9",
+    "react3l": "^7.0.0-rc4",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.0",
+    "xlsx": "^0.18.5"
+  },
   "devDependencies": {
     "@coreui/coreui": "^4.2.6",
     "@coreui/react": "^4.7.0",
+    "@parcel/config-webextension": "^2.8.3",
     "@parcel/transformer-sass": "2.8.3",
     "@types/chrome": "^0.0.233",
     "@types/jest": "^29.5.1",
@@ -21,16 +41,5 @@
     "process": "^0.11.10",
     "sinon": "^15.0.4",
     "typescript": "^5.0.4"
-  },
-  "scripts": {
-    "start": "parcel src/index.html"
-  },
-  "dependencies": {
-    "antd": "^5.4.4",
-    "axios": "^1.3.6",
-    "bootstrap": "^5.2.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react3l": "^7.0.0-rc4"
   }
 }
