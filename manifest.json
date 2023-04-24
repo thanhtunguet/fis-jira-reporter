@@ -1,38 +1,38 @@
 {
-    "name": "TS Jira",
-    "version": "1.0.0",
-    "description": "Jira reporter for employees whose company using Jira",
-    "manifest_version": 3,
-    "icons": {
-        "16": "assets/icons/icon-16x16.png",
-        "32": "assets/icons/icon-32x32.png",
-        "48": "assets/icons/icon-48x48.png"
-    },
-    "action": {
-        "default_popup": "./src/index.html"
-    },
-    "background": {
-        "service_worker": "./src/background.ts"
-    },
-    "permissions": [
-        "tabs",
-        "cookies",
-        "storage"
-    ],
-    "host_permissions": [
-        "https://jira.fis.com.vn/*"
-    ],
-    "options_ui": {
-        "page": "./src/options.html",
-        "open_in_tab": true
-    },
-    "web_accessible_resources": [
-        {
-            "resources": [
-                "assets/screenshot-1.png",
-                "assets/jira.excel.template.xlsx"
-            ],
-            "matches": []
-        }
-    ]
+  "name": "TS Jira",
+  "version": "1.0.0",
+  "description": "Jira reporter for employees whose company using Jira",
+  "manifest_version": 3,
+  "icons": {
+    "16": "assets/icons/icon-16x16.png",
+    "32": "assets/icons/icon-32x32.png",
+    "48": "assets/icons/icon-48x48.png"
+  },
+  "action": {
+    "default_popup": "./src/index.html"
+  },
+  "background": {
+    "service_worker": "./src/background.ts"
+  },
+  "permissions": [
+    "tabs",
+    "cookies",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://jira.fis.com.vn/*"
+  ],
+  "options_ui": {
+    "page": "./src/options.html",
+    "open_in_tab": true
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/excel.jpg",
+        "assets/jira.excel.template.xlsx"
+      ],
+      "matches": []
+    }
+  ]
 }

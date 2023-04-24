@@ -8,7 +8,8 @@
   "private": true,
   "scripts": {
     "start": "parcel manifest.json --config @parcel/config-webextension",
-    "build": "parcel build manifest.json --config @parcel/config-webextension"
+    "dev": "rm -rf dist && NODE_ENV=development parcel build manifest.json --config @parcel/config-webextension",
+    "build": "rm -rf dist && parcel build manifest.json --config @parcel/config-webextension"
   },
   "dependencies": {
     "@swc/helpers": "^0.4.12",

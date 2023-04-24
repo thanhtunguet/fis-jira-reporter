@@ -4,12 +4,12 @@ import { JIRA_HOST } from "../config/consts";
 import { Component, Phase, Project, Task, TypeOfWork, User } from "../models";
 import { Moment } from "moment";
 
-Repository.requestInterceptor = async function (config) {
-  const cookie = await chrome.cookies.get({
-    url: JIRA_HOST,
-    name: "JSESSIONID",
-  });
-  config.headers.cookie = `JSESSIONID=${cookie.value}`;
+Repository.requestInterceptor = async function(config) {
+  /* const cookie = await chrome.cookies.get({ */
+  /*   url: JIRA_HOST, */
+  /*   name: "JSESSIONID", */
+  /* }); */
+  config.headers.cookie = `JSESSIONID=6EA3DDF4877B3EBB88AACA021A37D7FF`;
   return config;
 };
 

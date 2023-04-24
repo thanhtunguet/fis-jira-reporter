@@ -125,7 +125,7 @@ export enum TypeOfWork {
   Test = "Test",
 }
 
-export interface ImportData {
+export interface TaskData {
   date: Moment;
 
   weekNum: number;
