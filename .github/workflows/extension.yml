@@ -12,18 +12,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install dependencies
-        uses: borales/actions-yarn@v2
-        with:
-          cmd: install
-
-      - name: Build
-        uses: borales/actions-yarn@v2
-        with:
-          cmd: build
-
-      - name: Create zip file
-        run: zip -r extension.zip dist
+      - name: Build project
+        run: |
+          yarn install
+          yarn build
+          zip -r extension.zip dist
 
       - name: Publish release
         uses: actions/create-release@v1
