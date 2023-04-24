@@ -18,19 +18,30 @@ jobs:
           yarn build
           zip -r extension.zip dist
 
-      - name: Publish release
+      - name: Create Draft Release
+        id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref }}
         with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release v${{ github.run_number }}
-          body: This is an automated release created by GitHub Actions.
-          draft: false
+          tag_name: v1.0.0
+          release_name: $TAG
+          draft: true
           prerelease: false
 
-      - name: Upload asset
-        uses: actions/upload-release-asset@v1
+      - uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_path: extension.zip
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./extension.zip
           asset_name: extension.zip
           asset_content_type: application/zip
-          release_id: ${{ github.event.release.id }}
+
+      - uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.create_release.outputs.id }}
+          
