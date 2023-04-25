@@ -15,9 +15,7 @@
     "service_worker": "./src/background.ts"
   },
   "permissions": [
-    "tabs",
-    "cookies",
-    "storage"
+    "cookies"
   ],
   "host_permissions": [
     "https://jira.fis.com.vn/*"
