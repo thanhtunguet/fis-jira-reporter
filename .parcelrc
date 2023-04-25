@@ -1,0 +1,11 @@
+{
+  "extends": "@parcel/config-webextension",
+  "transformers": {
+    "*.md": [
+      "@parcel/transformer-mdx"
+    ],
+    "*.mdx": [
+      "@parcel/transformer-mdx"
+    ]
+  }
+}
