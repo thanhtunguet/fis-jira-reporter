@@ -1,6 +1,6 @@
 {
   "name": "jira-reporter",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Jira Reporter, for employee whose company using Jira",
   "repository": "https://github.com/thanhtunguet/jira-reporter",
   "author": "thanhtunguet <thanhtung.uet@gmail.com>",

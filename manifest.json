@@ -1,7 +1,7 @@
 {
-  "name": "TS Jira",
-  "version": "1.2.1",
-  "description": "Jira reporter for employees whose company using Jira",
+  "name": "FIS Jira",
+  "version": "1.2.2",
+  "description": "Jira timesheet automation tool for FIS employees",
   "manifest_version": 3,
   "icons": {
     "16": "assets/icons/icon-16x16.png",
