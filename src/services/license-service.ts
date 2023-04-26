@@ -1,37 +1,33 @@
-import { onValue, ref } from "firebase/database";
-import moment from "moment";
-import { Service } from "react3l";
-import { BehaviorSubject, firstValueFrom } from "rxjs";
-import { database } from "../database";
-import { jiraRepository } from "../repositories/jira-repository";
+import {onValue, ref} from 'firebase/database';
+import moment from 'moment';
+import {Service} from 'react3l';
+import {firstValueFrom} from 'rxjs';
+import {database} from 'src/config/database';
+import {jiraRepository} from 'src/repositories/jira-repository';
 
 export type Users = Record<string, string>;
 
-export const users = new BehaviorSubject<Users>({});
-
 class LicenseService extends Service {
-  async getUsers(): Promise<Users> {
-    return new Promise((resolve) => {
-      const starCountRef = ref(database, "users");
+  public async getUsers(): Promise<Users> {
+    return new Promise<Users>((resolve) => {
+      const starCountRef = ref(database, 'users');
       onValue(starCountRef, (snapshot) => {
         const data = snapshot.val();
         resolve(data);
-        users.next(data);
       });
     });
   }
 
-  async hasLicense(u: string): Promise<boolean> {
-    const username = u.toLowerCase();
-    const currentUsers = users.getValue();
-    if (!Object.prototype.hasOwnProperty.call(currentUsers, username)) {
+  public async hasLicense(username: string, users: Users): Promise<boolean> {
+    const lowercaseUsername: string = username.toLowerCase();
+    if (!Object.prototype.hasOwnProperty.call(users, lowercaseUsername)) {
       return false;
     }
-    const time = currentUsers[username];
-    const m = moment(time);
+    const expiredTimeString = users[lowercaseUsername];
+    const expiredTime = moment(expiredTimeString);
     const now = await firstValueFrom(jiraRepository.getDate());
-    return now.toDate().getTime() < m.toDate().getTime();
+    return now.toDate().getTime() < expiredTime.toDate().getTime();
   }
 }
 
-export const licenseService = new LicenseService();
+export const licenseService: LicenseService = new LicenseService();

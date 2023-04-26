@@ -1,16 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import README from 'readme.mdx';
-import 'src/config/dayjs';
-
-function App() {
-  return (
-    <div className="container">
-      <README />
-    </div>
-  );
-}
+import {App} from 'src/App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

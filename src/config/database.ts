@@ -1,10 +1,11 @@
-import { getDatabase } from "firebase/database";
-import { initializeApp } from "firebase/app";
+import {getDatabase} from 'firebase/database';
+import {initializeApp} from 'firebase/app';
+import type {FirebaseOptions} from '@firebase/app';
 
-const firebaseConfig = {
+const firebaseConfig: FirebaseOptions = {
   // ...
   // The value of `databaseURL` depends on the location of the database
-  databaseURL: "https://qmix-projects.asia-southeast1.firebasedatabase.app",
+  databaseURL: 'https://qmix-projects.asia-southeast1.firebasedatabase.app',
 };
 
 // Initialize Firebase

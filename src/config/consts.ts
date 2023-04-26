@@ -1,1 +1,1 @@
-export const JIRA_HOST = 'https://jira.fis.com.vn';
+export const JIRA_HOST: string = 'https://jira.fis.com.vn';

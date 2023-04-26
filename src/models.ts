@@ -1,5 +1,5 @@
-import { Moment } from "moment";
-import { Field, Model, MomentField, ObjectField } from "react3l";
+import type {Moment} from 'moment';
+import {Field, Model, MomentField, ObjectField} from 'react3l';
 
 class LoginInfo extends Model {
   @Field(Number)
@@ -28,16 +28,16 @@ export class User extends Model {
 
 class AvatarUrls extends Model {
   @Field(String)
-  "48x48": string;
+  '48x48': string;
 
   @Field(String)
-  "24x24": string;
+  '24x24': string;
 
   @Field(String)
-  "16x16": string;
+  '16x16': string;
 
   @Field(String)
-  "32x32": string;
+  '32x32': string;
 }
 
 class ProjectCategory extends Model {
@@ -118,11 +118,11 @@ export class Phase extends Model {
 }
 
 export enum TypeOfWork {
-  Create = "Create",
-  Correct = "Correct",
-  Study = "Study",
-  Review = "Review",
-  Test = "Test",
+  Create = 'Create',
+  Correct = 'Correct',
+  Study = 'Study',
+  Review = 'Review',
+  Test = 'Test',
 }
 
 export interface TaskData {

@@ -1,8 +1,8 @@
 body {
   min-width: 480px;
   min-height: 600px;
-  padding: 8px;
-  overflow: overlay;
+  padding: 0.5rem 1rem;
+  overflow: auto;
 }
 
 body::-webkit-scrollbar {

@@ -1,5 +1,5 @@
-declare module "*.mdx" {
-  import { FC } from "react";
+declare module '*.mdx' {
+  import type {FC} from 'react';
 
   const MarkdownComponent: FC;
 
