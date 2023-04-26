@@ -10,15 +10,8 @@ Thế nên mình ở đây giúp bạn việc đó.
 ## Hướng dẫn sử dụng
 
 Extension này giúp bạn khai task từ Excel và tự động tạo task vào Jira.
-Bạn chỉ cần tải về file template và điền task theo ngày như sau:
 
-![assets/excel.jpg](assets/excel.jpg)
-
-Template này đã thiết lập sẵn cột `date` để bạn kéo thả ngày làm việc trong tháng (loại trừ thứ 7, Chủ nhật)
-
-Bạn khai đủ số task theo ngày mong muốn, kéo từ đầu tháng đến cuối tháng nếu cần, loại bỏ một số ngày không mong muốn (ngày nghỉ, ngày đã khai, ngày cần khai dự án khác)
-
-Mở trình duyệt Chrome (hoặc Edge, Cốc Cốc, ...)
+### Thao tác chung
 
 Mở popup của extension `TS Jira` thực hiện thao tác:
 
@@ -26,12 +19,20 @@ Mở popup của extension `TS Jira` thực hiện thao tác:
 - Chọn component
 - Chọn Phase
 - Chọn TypeOfWork
-- Nhập username của người duyệt (PM, leader, ...)
+- Nhập `username` của người duyệt (PM, leader, ...)
 
 ### Cách 1: nhập từ Excel
 
 - Sao chép phần bảng excel vừa nhập
 - Paste vào ô `Import task data`
+
+![assets/excel.jpg](https://qmix-projects.web.app/images/excel.jpg)
+
+Template này đã thiết lập sẵn cột `date` để bạn kéo thả ngày làm việc trong tháng (loại trừ thứ 7, Chủ nhật)
+
+Bạn khai đủ số task theo ngày mong muốn, kéo từ đầu tháng đến cuối tháng nếu cần, loại bỏ một số ngày không mong muốn (ngày nghỉ, ngày đã khai, ngày cần khai dự án khác)
+
+Mở trình duyệt Chrome (hoặc Edge, Cốc Cốc, ...)
 
 ### Cách 2: sinh tự động
 

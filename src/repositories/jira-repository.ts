@@ -1,10 +1,10 @@
 import { Repository } from "react3l";
-import { Observable } from "rxjs";
+import { Observable, map } from "rxjs";
 import { JIRA_HOST } from "../config/consts";
 import { Component, Phase, Project, Task, TypeOfWork, User } from "../models";
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 
-Repository.requestInterceptor = async function(config) {
+Repository.requestInterceptor = async function (config) {
   /* const cookie = await chrome.cookies.get({ */
   /*   url: JIRA_HOST, */
   /*   name: "JSESSIONID", */
@@ -123,6 +123,15 @@ export class JiraRepository extends Repository {
         },
       })
       .pipe(Repository.responseDataMapper());
+  }
+
+  getDate(): Observable<Moment> {
+    return this.http.get("/secure/Dashboard.jspa").pipe(
+      map((response) => {
+        console.log(response.headers);
+        return moment(response.headers.date);
+      })
+    );
   }
 }
 

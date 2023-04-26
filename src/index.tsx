@@ -1,26 +1,37 @@
 import Button from "antd/es/button";
+import DatePicker from "antd/es/date-picker";
 import Form from "antd/es/form";
 import Input from "antd/es/input";
+import List from "antd/es/list";
 import notification from "antd/es/notification";
 import { NotificationPlacement } from "antd/es/notification/interface";
 import Select from "antd/es/select";
-import Title from "antd/es/typography/Title";
 import Spin from "antd/es/spin";
+import Switch from "antd/es/switch";
+import Title from "antd/es/typography/Title";
 import "bootstrap/dist/css/bootstrap.min.css";
+import dayjs, { Dayjs } from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import moment from "moment";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { useBoolean } from "react3l";
 import { finalize, firstValueFrom } from "rxjs";
-import { Component, TaskData, Phase, Project, TypeOfWork } from "./models";
+import {
+  Component,
+  Phase,
+  Project,
+  TaskData,
+  TypeOfWork,
+  User,
+} from "./models";
 import { jiraRepository } from "./repositories/jira-repository";
-import DatePicker from "antd/es/date-picker";
-import dayjs, { Dayjs } from "dayjs";
-import List from "antd/es/list";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import Switch from "antd/es/switch";
+import { Users, licenseService } from "./services/license-service";
+import { users as firebaseUsers } from "./services/license-service";
 
 dayjs.extend(isSameOrBefore);
+
+licenseService.getUsers();
 
 const { RangePicker } = DatePicker;
 
@@ -29,7 +40,42 @@ const Context = React.createContext({ name: "Default" });
 function App() {
   const [api, contextHolder] = notification.useNotification();
 
-  const [user, setUser] = React.useState<any>(null);
+  const [user, setUser] = React.useState<User>(null);
+
+  const [users, setUsers] = React.useState<Users>();
+
+  React.useEffect(() => {
+    const subscription = firebaseUsers.subscribe((users) => {
+      setUsers(users);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const [isValidLicense, setIsValidLicense] = React.useState<boolean>(false);
+
+  const [licenseChecking, setLicenseChecking] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (user && Object.values(users).length > 0) {
+      setLicenseChecking(true);
+
+      licenseService
+        .hasLicense(user.name)
+        .then((valid) => {
+          setIsValidLicense(valid);
+          console.log("success", valid);
+        })
+        .catch((error) => {
+          console.log("error", error);
+        })
+        .finally(() => {
+          console.log("finally");
+          setLicenseChecking(false);
+        });
+    }
+  }, [user, users]);
 
   const openNotification = (
     placement: NotificationPlacement,
@@ -77,7 +123,10 @@ function App() {
 
   React.useEffect(() => {
     jiraRepository.authSession().subscribe({
-      next: (user) => setUser(user),
+      next: (user) => {
+        setLicenseChecking(true);
+        setUser(user);
+      },
     });
   }, []);
 
@@ -109,322 +158,360 @@ function App() {
   return (
     <div className="p-2">
       {user ? (
-        <Spin spinning={loading}>
-          <div className="d-flex justify-content-between">
-            <Title level={5}>Welcome, {user.name}!</Title>
-            <Button
-              type="default"
-              role="link"
-              onClick={() => {
-                chrome.runtime.openOptionsPage();
-              }}
-            >
-              User guide
-            </Button>
-          </div>
-          <Form
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 24 }}
-            layout="vertical"
-          >
-            <Form.Item
-              name="project"
-              label="Project"
-              initialValue={selectedProject}
-            >
-              <Select
-                id="project"
-                placeholder="Select a project"
-                className="w-100"
-                loading={projectLoading}
-                onChange={(value) => {
-                  setSelectedProject(value);
-                  setSelectedComponent(undefined);
-                  setSelectedPhase(undefined);
-                }}
-                options={projects.map((project) => ({
-                  value: project.id,
-                  label: project.key,
-                }))}
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Component"
-              name="component"
-              initialValue={selectedComponent}
-            >
-              <Select
-                id="component"
-                disabled={!selectedProject}
-                placeholder="Select a component"
-                className="w-100"
-                onChange={(value) => {
-                  setSelectedComponent(value);
-                }}
-                options={components.map((component) => ({
-                  value: component.id,
-                  label: component.name,
-                }))}
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Phase"
-              name="phase"
-              initialValue={selectedComponent}
-            >
-              <Select
-                disabled={!selectedProject}
-                placeholder="Select a phase"
-                className="w-100"
-                onChange={(value) => {
-                  setSelectedPhase(value);
-                }}
-                options={phases.map((phase) => ({
-                  value: phase.id,
-                  label: phase.phaseValue,
-                }))}
-              />
-            </Form.Item>
-
-            <Form.Item label="Reporter" name="repoter" initialValue={reporter}>
-              <Input
-                disabled={!selectedProject}
-                placeholder="Enter reporter's username"
-                className="w-100"
-                onChange={(event) => {
-                  setReporter(event.target.value);
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Type of Work"
-              name="typeOfWork"
-              initialValue={typeOfWork}
-            >
-              <Select
-                disabled={
-                  !selectedProject || !selectedComponent || !selectedPhase
-                }
-                placeholder="Type of Work"
-                className="w-100"
-                onChange={(value) => {
-                  setTypeOfWork(value);
-                }}
-                options={Object.values(TypeOfWork).map((typeOfWork) => ({
-                  value: typeOfWork,
-                  label: typeOfWork,
-                }))}
-              />
-            </Form.Item>
-
-            <Form.Item label="Auto fill">
-              <Switch
-                checkedChildren="Enabled"
-                unCheckedChildren="Disabled"
-                checked={isAutoFill}
-                onChange={(_value, _e) => toggleAutoFill()}
-              />
-            </Form.Item>
-
-            {isAutoFill ? (
-              <>
-                <Form.Item label="Date range">
-                  <RangePicker
-                    value={dates}
-                    showTime
-                    placement="topLeft"
-                    disabledTime={(_) => {
-                      return {
-                        disabledHours: () =>
-                          Array.from({ length: 23 }, (_, i) => i + 1),
-                        disabledMinutes: () =>
-                          Array.from({ length: 59 }, (_, i) => i + 1),
-                        disabledSeconds: () =>
-                          Array.from({ length: 59 }, (_, i) => i + 1),
-                      };
+        <Spin spinning={loading || licenseChecking} tip="Loading">
+          {isValidLicense ? (
+            <>
+              <div className="d-flex justify-content-between">
+                <Title level={5}>Welcome, {user.name}!</Title>
+                <Button
+                  type="default"
+                  role="link"
+                  onClick={() => {
+                    chrome.runtime.openOptionsPage();
+                  }}
+                >
+                  User guide
+                </Button>
+              </div>
+              <Form
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 24 }}
+                layout="vertical"
+              >
+                <Form.Item
+                  name="project"
+                  label="Project"
+                  initialValue={selectedProject}
+                >
+                  <Select
+                    id="project"
+                    placeholder="Select a project"
+                    className="w-100"
+                    loading={projectLoading}
+                    onChange={(value) => {
+                      setSelectedProject(value);
+                      setSelectedComponent(undefined);
+                      setSelectedPhase(undefined);
                     }}
-                    disabledDate={(current) => {
-                      return current.day() <= 0 || current.day() >= 6;
-                    }}
-                    onChange={(dates) =>
-                      setDates([
-                        dates[0].startOf("day"),
-                        dates[1].startOf("day"),
-                      ])
-                    }
+                    options={projects.map((project) => ({
+                      value: project.id,
+                      label: project.key,
+                    }))}
                   />
                 </Form.Item>
 
-                <Form.Item label="Ignore dates">
-                  <DatePicker
-                    disabledDate={(current) => {
-                      return current.day() <= 0 || current.day() >= 6;
+                <Form.Item
+                  label="Component"
+                  name="component"
+                  initialValue={selectedComponent}
+                >
+                  <Select
+                    id="component"
+                    disabled={!selectedProject}
+                    placeholder="Select a component"
+                    className="w-100"
+                    onChange={(value) => {
+                      setSelectedComponent(value);
                     }}
-                    onChange={(date, _dateString) => {
-                      const newState = [
-                        ...ignoreDates,
-                        date.format("YYYY-MM-DD"),
-                      ];
-                      setIgnoreDates(newState);
-                    }}
+                    options={components.map((component) => ({
+                      value: component.id,
+                      label: component.name,
+                    }))}
                   />
-                  {ignoreDates && ignoreDates.length > 0 && (
-                    <>
-                      <List
-                        dataSource={ignoreDates}
-                        renderItem={(item: string) => (
-                          <List.Item>
-                            {dayjs(item).format("ddd, DD/MM/YYYY")}
-                          </List.Item>
-                        )}
-                      />
-                      <Button
-                        danger
-                        onClick={(_e: any) => {
-                          const newState = ignoreDates.slice(0, -1);
-                          setIgnoreDates(newState);
-                        }}
-                      >
-                        Remove
-                      </Button>
-                    </>
-                  )}
                 </Form.Item>
 
-                <Form.Item label="Task description">
+                <Form.Item
+                  label="Phase"
+                  name="phase"
+                  initialValue={selectedComponent}
+                >
+                  <Select
+                    disabled={!selectedProject}
+                    placeholder="Select a phase"
+                    className="w-100"
+                    onChange={(value) => {
+                      setSelectedPhase(value);
+                    }}
+                    options={phases.map((phase) => ({
+                      value: phase.id,
+                      label: phase.phaseValue,
+                    }))}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Reporter"
+                  name="repoter"
+                  initialValue={reporter}
+                >
                   <Input
-                    placeholder="Enter description"
+                    disabled={!selectedProject}
+                    placeholder="Enter reporter's username"
                     className="w-100"
                     onChange={(event) => {
-                      setDescription(event.target.value);
+                      setReporter(event.target.value);
                     }}
                   />
                 </Form.Item>
-              </>
-            ) : (
-              <>
-                <Form.Item label="Import task data">
-                  <Input.TextArea
+
+                <Form.Item
+                  label="Type of Work"
+                  name="typeOfWork"
+                  initialValue={typeOfWork}
+                >
+                  <Select
                     disabled={
-                      !selectedProject ||
-                      !selectedComponent ||
-                      !selectedPhase ||
-                      !reporter
+                      !selectedProject || !selectedComponent || !selectedPhase
                     }
-                    placeholder="Edit the template then copy the parts you want (image) to import and paste here"
-                    id="excel"
-                    onChange={(event) => setTaskValue(event.target.value)}
-                    rows={10}
+                    placeholder="Type of Work"
+                    className="w-100"
+                    onChange={(value) => {
+                      setTypeOfWork(value);
+                    }}
+                    options={Object.values(TypeOfWork).map((typeOfWork) => ({
+                      value: typeOfWork,
+                      label: typeOfWork,
+                    }))}
                   />
                 </Form.Item>
 
-                <a
-                  className="my-2"
-                  role="button"
-                  href="../assets/jira.excel.template.xlsx"
-                  download="jira.excel.template.xlsx"
-                >
-                  Download template
-                </a>
+                <Form.Item label="Auto fill">
+                  <Switch
+                    checkedChildren="Enabled"
+                    unCheckedChildren="Disabled"
+                    checked={isAutoFill}
+                    onChange={(_value, _e) => toggleAutoFill()}
+                  />
+                </Form.Item>
 
-                <img className="w-100 mt-2" src="../assets/excel.jpg" alt="" />
-              </>
-            )}
+                {isAutoFill ? (
+                  <>
+                    <Form.Item label="Date range">
+                      <RangePicker
+                        value={dates}
+                        showTime
+                        placement="topLeft"
+                        disabledTime={(_) => {
+                          return {
+                            disabledHours: () =>
+                              Array.from({ length: 23 }, (_, i) => i + 1),
+                            disabledMinutes: () =>
+                              Array.from({ length: 59 }, (_, i) => i + 1),
+                            disabledSeconds: () =>
+                              Array.from({ length: 59 }, (_, i) => i + 1),
+                          };
+                        }}
+                        disabledDate={(current) => {
+                          return current.day() <= 0 || current.day() >= 6;
+                        }}
+                        onChange={(dates) =>
+                          setDates([
+                            dates[0].startOf("day"),
+                            dates[1].startOf("day"),
+                          ])
+                        }
+                      />
+                    </Form.Item>
 
-            <Form.Item name="file">
-              <Button
-                type="primary"
-                className="mt-2"
-                htmlType="submit"
-                onClick={async () => {
-                  try {
-                    let tasks: TaskData[] = [];
-                    if (isAutoFill) {
-                      const [startDate, endDate] = dates;
-                      let currDate = startDate.clone().startOf("day");
+                    <Form.Item label="Ignore dates">
+                      <DatePicker
+                        disabledDate={(current) => {
+                          return current.day() <= 0 || current.day() >= 6;
+                        }}
+                        onChange={(date, _dateString) => {
+                          const newState = [
+                            ...ignoreDates,
+                            date.format("YYYY-MM-DD"),
+                          ];
+                          setIgnoreDates(newState);
+                        }}
+                      />
+                      {ignoreDates && ignoreDates.length > 0 && (
+                        <>
+                          <List
+                            dataSource={ignoreDates}
+                            renderItem={(item: string) => (
+                              <List.Item>
+                                {dayjs(item).format("ddd, DD/MM/YYYY")}
+                              </List.Item>
+                            )}
+                          />
+                          <Button
+                            danger
+                            onClick={(_e: any) => {
+                              const newState = ignoreDates.slice(0, -1);
+                              setIgnoreDates(newState);
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        </>
+                      )}
+                    </Form.Item>
 
-                      while (currDate.isSameOrBefore(endDate)) {
-                        if (
-                          currDate.day() > 0 &&
-                          currDate.day() < 6 &&
-                          !ignoreDates.includes(currDate.format("YYYY-MM-DD"))
-                        )
-                          tasks.push({
-                            date: moment(currDate.toDate()),
-                            weekNum: 0,
-                            task: description,
+                    <Form.Item label="Task description">
+                      <Input
+                        placeholder="Enter description"
+                        className="w-100"
+                        onChange={(event) => {
+                          setDescription(event.target.value);
+                        }}
+                      />
+                    </Form.Item>
+                  </>
+                ) : (
+                  <>
+                    <Form.Item label="Import task data">
+                      <Input.TextArea
+                        disabled={
+                          !selectedProject ||
+                          !selectedComponent ||
+                          !selectedPhase ||
+                          !reporter
+                        }
+                        placeholder="Edit the template then copy the parts you want (image) to import and paste here"
+                        id="excel"
+                        onChange={(event) => setTaskValue(event.target.value)}
+                        rows={10}
+                      />
+                    </Form.Item>
+
+                    <a
+                      className="my-2"
+                      role="button"
+                      href="../assets/jira.excel.template.xlsx"
+                      download="jira.excel.template.xlsx"
+                    >
+                      Download template
+                    </a>
+
+                    <img
+                      className="w-100 mt-2"
+                      src="../assets/excel.jpg"
+                      alt=""
+                    />
+                  </>
+                )}
+
+                <Form.Item name="file">
+                  <Button
+                    type="primary"
+                    className="mt-2"
+                    htmlType="submit"
+                    onClick={async () => {
+                      try {
+                        let tasks: TaskData[] = [];
+                        if (isAutoFill) {
+                          const [startDate, endDate] = dates;
+                          let currDate = startDate.clone().startOf("day");
+
+                          while (currDate.isSameOrBefore(endDate)) {
+                            if (
+                              currDate.day() > 0 &&
+                              currDate.day() < 6 &&
+                              !ignoreDates.includes(
+                                currDate.format("YYYY-MM-DD")
+                              )
+                            )
+                              tasks.push({
+                                date: moment(currDate.toDate()),
+                                weekNum: 0,
+                                task: description,
+                              });
+                            currDate = currDate.add(1, "day");
+                          }
+                        } else {
+                          tasks = taskValue.split("\n").map((line) => {
+                            const [_index, date, weekNum, task] =
+                              line.split("\t");
+                            return {
+                              date: moment(date),
+                              weekNum: Number(weekNum),
+                              task,
+                            };
                           });
-                        currDate = currDate.add(1, "day");
+                        }
+                        setLoading(true);
+                        const project = projects.find(
+                          (p) => p.id === selectedProject
+                        );
+                        const component = components.find(
+                          (c) => c.id === selectedComponent
+                        );
+                        const phase = phases.find(
+                          (p) => p.id === selectedPhase
+                        );
+                        for (const task of tasks) {
+                          console.log(task);
+                          const jiraTask = await firstValueFrom(
+                            jiraRepository.task(
+                              user.name,
+                              reporter,
+                              project,
+                              component,
+                              task.date,
+                              task.task
+                            )
+                          );
+                          const workLog = await firstValueFrom(
+                            jiraRepository.worklog(
+                              jiraTask,
+                              task.task,
+                              phase,
+                              user,
+                              task.date,
+                              typeOfWork
+                            )
+                          );
+                          await firstValueFrom(
+                            jiraRepository.complete(jiraTask)
+                          );
+                        }
+                        setLoading(false);
+                        openNotification(
+                          "bottomRight",
+                          "All tasks are completed",
+                          "All tasks from Excel have been created and completed",
+                          api.info
+                        );
+                      } catch (err) {
+                        openNotification(
+                          "bottomRight",
+                          "An error occured",
+                          "Please double check your data then try again",
+                          api.info
+                        );
                       }
-                    } else {
-                      tasks = taskValue.split("\n").map((line) => {
-                        const [_index, date, weekNum, task] = line.split("\t");
-                        return {
-                          date: moment(date),
-                          weekNum: Number(weekNum),
-                          task,
-                        };
-                      });
-                    }
-                    setLoading(true);
-                    const project = projects.find(
-                      (p) => p.id === selectedProject
-                    );
-                    const component = components.find(
-                      (c) => c.id === selectedComponent
-                    );
-                    const phase = phases.find((p) => p.id === selectedPhase);
-                    for (const task of tasks) {
-                      console.log(task);
-                      const jiraTask = await firstValueFrom(
-                        jiraRepository.task(
-                          user.name,
-                          reporter,
-                          project,
-                          component,
-                          task.date,
-                          task.task
-                        )
-                      );
-                      const workLog = await firstValueFrom(
-                        jiraRepository.worklog(
-                          jiraTask,
-                          task.task,
-                          phase,
-                          user,
-                          task.date,
-                          typeOfWork
-                        )
-                      );
-                      await firstValueFrom(jiraRepository.complete(jiraTask));
-                    }
-                    setLoading(false);
-                    openNotification(
-                      "bottomRight",
-                      "All tasks are completed",
-                      "All tasks from Excel have been created and completed",
-                      api.info
-                    );
-                  } catch (err) {
-                    openNotification(
-                      "bottomRight",
-                      "An error occured",
-                      "Please double check your data then try again",
-                      api.info
-                    );
-                  }
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </Form.Item>
+              </Form>
+              <Context.Provider value={contextValue}>
+                {contextHolder}
+              </Context.Provider>
+            </>
+          ) : (
+            <div className="d-flex align-items-center">
+              <span>
+                {licenseChecking
+                  ? "Checking for your license"
+                  : "You do not have license to use this extension. Contact 0367.615.734 to get a license"}
+              </span>
+
+              <Button
+                type="default"
+                role="link"
+                className="mx-4"
+                onClick={() => {
+                  chrome.runtime.openOptionsPage();
                 }}
               >
-                Submit
+                User guide
               </Button>
-            </Form.Item>
-          </Form>
-          <Context.Provider value={contextValue}>
-            {contextHolder}
-          </Context.Provider>
+            </div>
+          )}
         </Spin>
       ) : (
         <p>
