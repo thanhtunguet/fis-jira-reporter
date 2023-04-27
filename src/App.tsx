@@ -76,7 +76,7 @@ export function App() {
   );
   const [reporter, setReporter] = React.useState<string>('');
 
-  const [isAutoFill, toggleAutoFill] = useBoolean(true);
+  const [isAutoFill, toggleAutoFill] = useBoolean(false);
   const [dates, setDates] = React.useState<[Dayjs, Dayjs]>(null);
   const [ignoreDates, setIgnoreDates] = React.useState<string[]>([]);
   const [taskValue, setTaskValue] = React.useState<string>('');
@@ -211,6 +211,10 @@ export function App() {
           initialValue={selectedProject}>
           <Select
             id="project"
+            showSearch={true}
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
             placeholder="Select a project"
             className="w-100"
             loading={projectLoading}
