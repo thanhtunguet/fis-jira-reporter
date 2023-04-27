@@ -66,7 +66,7 @@ export function App() {
     string | undefined
   >();
 
-  const [phases, phaseLoading] = usePhases();
+  const [phases, phaseLoading] = usePhases(selectedProject);
   const [selectedPhase, setSelectedPhase] = React.useState<
     number | undefined
   >();
