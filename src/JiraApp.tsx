@@ -8,8 +8,8 @@ import type {NotificationPlacement} from 'antd/es/notification/interface';
 import {useProjects} from 'src/services/use-projects';
 import {useComponents} from 'src/services/use-components';
 import {usePhases} from 'src/services/use-phases';
-import type {TaskData} from 'src/models';
-import {TypeOfWork} from 'src/models';
+import type {TaskData} from 'src/models/models';
+import {TypeOfWork} from 'src/models/models';
 import {useBoolean} from 'react3l';
 import Spin from 'antd/es/spin';
 import Title from 'antd/es/typography/Title';
@@ -22,8 +22,8 @@ import List from 'antd/es/list';
 import moment from 'moment/moment';
 import {firstValueFrom} from 'rxjs';
 import {jiraRepository} from 'src/repositories/jira-repository';
-import NoLicense from 'no-license.mdx';
-import NoLogin from 'no-login.mdx';
+import NoLicense from 'src/markdown/no-license.md';
+import NoLogin from 'src/markdown/no-login.md';
 import 'src/config/dayjs';
 import {UserGuideButton} from 'src/components/UserGuideButton';
 
@@ -31,7 +31,7 @@ const {RangePicker} = DatePicker;
 
 const Context = React.createContext({name: 'Default'});
 
-export function App() {
+export function JiraApp() {
   const [api, contextHolder] = notification.useNotification();
 
   const [user, userLoading, isValidLicense] = useUser();
@@ -386,7 +386,7 @@ export function App() {
             <a
               className="my-2"
               role="button"
-              href="../assets/jira.excel.template.xlsx"
+              href="assets/jira.excel.template.xlsx"
               download="jira.excel.template.xlsx">
               Download template
             </a>

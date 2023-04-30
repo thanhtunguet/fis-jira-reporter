@@ -1,5 +1,5 @@
 import React from 'react';
-import type {Phase} from 'src/models';
+import type {Phase} from 'src/models/models';
 import {jiraRepository} from 'src/repositories/jira-repository';
 import {finalize} from 'rxjs';
 

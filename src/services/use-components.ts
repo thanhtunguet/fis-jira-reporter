@@ -1,5 +1,5 @@
 import React from 'react';
-import type {Component, Project} from 'src/models';
+import type {Component, Project} from 'src/models/models';
 import {jiraRepository} from 'src/repositories/jira-repository';
 import {finalize} from 'rxjs';
 

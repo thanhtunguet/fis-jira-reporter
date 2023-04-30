@@ -7,15 +7,13 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "watch": "rm -rf dist && NODE_ENV=development parcel manifest.json",
-    "build": "rm -rf dist && NODE_ENV=production  parcel build manifest.json"
+    "watch": "rm -rf dist && NODE_ENV=development parcel src/manifest.json",
+    "build": "rm -rf dist && NODE_ENV=production  parcel build src/manifest.json"
   },
   "alias": {
     "manifest.json": "./manifest.json",
     "package.json": "./package.json",
-    "readme.mdx": "./README.mdx",
-    "no-license.mdx": "./no-license.mdx",
-    "no-login.mdx": "./no-login.mdx",
+    "readme.mdx": "./README.md",
     "src": "./src"
   },
   "dependencies": {

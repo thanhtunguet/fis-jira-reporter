@@ -1,5 +1,5 @@
 import React from 'react';
-import type {User} from 'src/models';
+import type {User} from 'src/models/models';
 import {jiraRepository} from 'src/repositories/jira-repository';
 import {concatMap, finalize} from 'rxjs';
 import type {Users} from 'src/services/license-service';
