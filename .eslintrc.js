@@ -30,5 +30,6 @@ module.exports = {
         prefer: 'type-imports',
       },
     ],
+    'react/react-in-jsx-scope': 'off',
   },
 };

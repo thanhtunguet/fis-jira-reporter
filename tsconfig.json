@@ -28,13 +28,7 @@
         "./dist/manifest.json"
       ],
       "readme.mdx": [
-        "./README.mdx"
-      ],
-      "no-license.mdx": [
-        "./no-license.mdx"
-      ],
-      "no-login.mdx": [
-        "./no-login.mdx"
+        "./README.md"
       ]
     },
     "resolveJsonModule": true,

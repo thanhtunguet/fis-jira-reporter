@@ -1,31 +1,30 @@
+import Button from 'antd/es/button';
+import DatePicker from 'antd/es/date-picker';
+import Form from 'antd/es/form';
+import Input from 'antd/es/input';
+import List from 'antd/es/list';
+import notification from 'antd/es/notification';
+import type {NotificationPlacement} from 'antd/es/notification/interface';
+import Select from 'antd/es/select';
+import Spin from 'antd/es/spin';
+import Switch from 'antd/es/switch';
+import Title from 'antd/es/typography/Title';
 import type {Dayjs} from 'dayjs';
 import dayjs from 'dayjs';
-import DatePicker from 'antd/es/date-picker';
+import moment from 'moment/moment';
 import React from 'react';
-import notification from 'antd/es/notification';
-import {useUser} from 'src/services/use-user';
-import type {NotificationPlacement} from 'antd/es/notification/interface';
-import {useProjects} from 'src/services/use-projects';
-import {useComponents} from 'src/services/use-components';
-import {usePhases} from 'src/services/use-phases';
+import {useBoolean} from 'react3l';
+import {firstValueFrom} from 'rxjs';
+import {UserGuideButton} from 'src/components/UserGuideButton';
+import 'src/config/dayjs';
+import NoLicense from 'src/markdown/no-license.md';
 import type {TaskData} from 'src/models';
 import {TypeOfWork} from 'src/models';
-import {useBoolean} from 'react3l';
-import Spin from 'antd/es/spin';
-import Title from 'antd/es/typography/Title';
-import Button from 'antd/es/button';
-import Form from 'antd/es/form';
-import Select from 'antd/es/select';
-import Input from 'antd/es/input';
-import Switch from 'antd/es/switch';
-import List from 'antd/es/list';
-import moment from 'moment/moment';
-import {firstValueFrom} from 'rxjs';
 import {jiraRepository} from 'src/repositories/jira-repository';
-import NoLicense from 'no-license.mdx';
-import NoLogin from 'no-login.mdx';
-import 'src/config/dayjs';
-import {UserGuideButton} from 'src/components/UserGuideButton';
+import {useUser} from 'src/services/use-user';
+import {useJiraState} from 'src/services/use-jira-state';
+import './App.scss';
+import {JIRA_HOST} from 'src/config/consts';
 
 const {RangePicker} = DatePicker;
 
@@ -52,29 +51,25 @@ export function App() {
     [api.error],
   );
 
+  const [
+    projects,
+    selectedProject,
+    handleSelectProject,
+    components,
+    selectedComponent,
+    handleSelectComponent,
+    phases,
+    selectedPhase,
+    handleSelectPhase,
+    reporter,
+    handleChangeReporter,
+    typeOfWork,
+    handleChangeTypeOfWork,
+  ] = useJiraState();
+
   const contextValue = React.useMemo(() => ({name: 'Ant Design'}), []);
 
   const [loading, setLoading] = React.useState<boolean>(false);
-
-  const [projects, projectLoading] = useProjects();
-  const [selectedProject, setSelectedProject] = React.useState<
-    string | undefined
-  >();
-
-  const [components, componentLoading] = useComponents(selectedProject);
-  const [selectedComponent, setSelectedComponent] = React.useState<
-    string | undefined
-  >();
-
-  const [phases, phaseLoading] = usePhases(selectedProject);
-  const [selectedPhase, setSelectedPhase] = React.useState<
-    number | undefined
-  >();
-
-  const [typeOfWork, setTypeOfWork] = React.useState<TypeOfWork>(
-    TypeOfWork.Create,
-  );
-  const [reporter, setReporter] = React.useState<string>('');
 
   const [isAutoFill, toggleAutoFill] = useBoolean(false);
   const [dates, setDates] = React.useState<[Dayjs, Dayjs]>(null);
@@ -91,6 +86,7 @@ export function App() {
   }, []);
 
   const handleSubmit = React.useCallback(async () => {
+    const endOfDay = moment().endOf('date');
     try {
       let tasks: TaskData[] = [];
       if (isAutoFill) {
@@ -126,27 +122,29 @@ export function App() {
       const component = components.find((c) => c.id === selectedComponent);
       const phase = phases.find((p) => p.id === selectedPhase);
       for (const task of tasks) {
-        const jiraTask = await firstValueFrom(
-          jiraRepository.task(
-            user.name,
-            reporter,
-            project,
-            component,
-            task.date,
-            task.task,
-          ),
-        );
-        await firstValueFrom(
-          jiraRepository.createWorkLog(
-            jiraTask,
-            task.task,
-            phase,
-            user,
-            task.date,
-            typeOfWork,
-          ),
-        );
-        await firstValueFrom(jiraRepository.complete(jiraTask));
+        if (task.date.toDate().getTime() <= endOfDay.toDate().getTime()) {
+          const jiraTask = await firstValueFrom(
+            jiraRepository.task(
+              user.name,
+              reporter,
+              project,
+              component,
+              task.date,
+              task.task,
+            ),
+          );
+          await firstValueFrom(
+            jiraRepository.createWorkLog(
+              jiraTask,
+              task.task,
+              phase,
+              user,
+              task.date,
+              typeOfWork,
+            ),
+          );
+          await firstValueFrom(jiraRepository.complete(jiraTask));
+        }
       }
       setLoading(false);
       openNotification(
@@ -182,20 +180,32 @@ export function App() {
     user,
   ]);
 
-  if (!user) {
+  if (userLoading) {
     return (
-      <Spin spinning={userLoading} tip="Checking user login's info">
-        <NoLogin />
+      <Spin spinning={userLoading} tip="Checking your license status">
+        <div className="spinning" />
       </Spin>
     );
   }
 
-  if (!isValidLicense) {
+  if (!user) {
     return (
-      <Spin spinning={userLoading} tip="Checking license status">
-        <NoLicense />
-      </Spin>
+      <>
+        <div className="mb-4">Please login to your Jira account</div>
+        <Button
+          type="primary"
+          htmlType="button"
+          onClick={() => {
+            window.open(JIRA_HOST);
+          }}>
+          Login
+        </Button>
+      </>
     );
+  }
+
+  if (!isValidLicense) {
+    return <NoLicense />;
   }
 
   return (
@@ -217,11 +227,9 @@ export function App() {
             }
             placeholder="Select a project"
             className="w-100"
-            loading={projectLoading}
+            loading={loading}
             onChange={(value) => {
-              setSelectedProject(value);
-              setSelectedComponent(undefined);
-              setSelectedPhase(undefined);
+              handleSelectProject(value);
             }}
             options={projects.map((project) => ({
               value: project.id,
@@ -239,9 +247,9 @@ export function App() {
             disabled={!selectedProject}
             placeholder="Select a component"
             className="w-100"
-            loading={componentLoading}
+            loading={loading}
             onChange={(value) => {
-              setSelectedComponent(value);
+              handleSelectComponent(value);
             }}
             options={components.map((component) => ({
               value: component.id,
@@ -252,12 +260,12 @@ export function App() {
 
         <Form.Item label="Phase" name="phase" initialValue={selectedComponent}>
           <Select
-            disabled={!selectedProject}
+            disabled={!selectedProject || !selectedComponent}
             placeholder="Select a phase"
             className="w-100"
-            loading={phaseLoading}
+            loading={loading}
             onChange={(value) => {
-              setSelectedPhase(value);
+              handleSelectPhase(value);
             }}
             options={phases.map((phase) => ({
               value: phase.id,
@@ -268,11 +276,11 @@ export function App() {
 
         <Form.Item label="Reporter" name="repoter" initialValue={reporter}>
           <Input
-            disabled={!selectedProject}
+            disabled={!selectedProject || !selectedComponent || !selectedPhase}
             placeholder="Enter reporter's username"
             className="w-100"
             onChange={(event) => {
-              setReporter(event.target.value);
+              handleChangeReporter(event.target.value);
             }}
           />
         </Form.Item>
@@ -286,7 +294,7 @@ export function App() {
             placeholder="Type of Work"
             className="w-100"
             onChange={(value) => {
-              setTypeOfWork(value);
+              handleChangeTypeOfWork(value);
             }}
             options={Object.values(TypeOfWork).map((selectedTypeOfWork) => ({
               value: selectedTypeOfWork,

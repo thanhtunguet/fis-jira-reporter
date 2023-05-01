@@ -1,6 +1,6 @@
 {
   "name": "FIS Jira",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Jira timesheet automation tool for FIS employees",
   "manifest_version": 3,
   "icons": {
@@ -10,27 +10,39 @@
     "64": "assets/icons/icon-64x64.png",
     "128": "assets/icons/icon-128x128.png"
   },
-  "action": {
-    "default_popup": "./src/popup.html"
-  },
-  "background": {
-    "service_worker": "./src/background.ts"
-  },
   "permissions": [
     "cookies"
   ],
   "host_permissions": [
     "https://jira.fis.com.vn/*"
   ],
+  "action": {
+    "default_popup": "./src/modules/popup/popup.html"
+  },
+  "background": {
+    "service_worker": "./src/background.ts",
+    "type": "module"
+  },
   "options_ui": {
-    "page": "./src/options.html",
+    "page": "./src/modules/options/options.html",
     "open_in_tab": true
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://jira.fis.com.vn/*"
+      ],
+      "js": [
+        "src/jira.fis.com.vn.tsx"
+      ]
+    }
+  ],
   "web_accessible_resources": [
     {
       "resources": [
-        "assets/excel.jpg",
-        "assets/jira.excel.template.xlsx"
+        "assets/*",
+        "src/**/*",
+        "README.md"
       ],
       "matches": []
     }
