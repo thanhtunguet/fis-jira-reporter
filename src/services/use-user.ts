@@ -1,5 +1,6 @@
 import React from 'react';
 import {concatMap, finalize} from 'rxjs';
+import {JIRA_HOST} from 'src/config/consts';
 import type {User} from 'src/models';
 import {jiraRepository} from 'src/repositories/jira-repository';
 import {licenseService} from 'src/services/license-service';
@@ -35,7 +36,7 @@ export function useUser(): [User, boolean, boolean] {
               setIsValidLicense(isValid);
             },
             error: () => {
-              //
+              window.open(JIRA_HOST);
             },
           });
       });
