@@ -7,8 +7,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "watch": "rm -rf dist && NODE_ENV=development parcel manifest.json",
-    "build": "rm -rf dist .parcel-cache && NODE_ENV=production  parcel build manifest.json"
+    "watch": "rm -rf dist && NODE_ENV=development parcel watch manifest.json",
+    "build": "rm -rf dist .parcel-cache && NODE_ENV=production parcel build manifest.json --no-source-maps"
   },
   "alias": {
     "manifest.json": "./manifest.json",
