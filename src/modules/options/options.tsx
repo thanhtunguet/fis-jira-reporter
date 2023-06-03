@@ -1,27 +1,23 @@
-import {Col, Row} from 'antd/es/grid';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import type {Root} from 'react-dom/client';
 import ReactDOM from 'react-dom/client';
 import {Provider} from 'react-redux';
 import README from 'readme.mdx';
-import {App} from 'src/modules/jira/App';
 import 'src/config/dayjs';
 import {store} from 'src/store';
+import 'bootstrap/dist/css/bootstrap.css';
 
 function OptionsApp() {
   return (
-    <Provider store={store}>
-      <Row className="py-4">
-        <Col span={8} offset={2}>
-          <App />
-        </Col>
-        <Col span={8} offset={4}>
-          <README />
-        </Col>
-      </Row>
-    </Provider>
+    <div className="container py-4">
+      <README />
+    </div>
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root: Root = ReactDOM.createRoot(document.getElementById('root'));
 
-root.render(<OptionsApp />);
+root.render(
+  <Provider store={store}>
+    <OptionsApp />
+  </Provider>,
+);

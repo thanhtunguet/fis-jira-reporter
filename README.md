@@ -13,7 +13,7 @@ Extension này giúp bạn khai task từ Excel và tự động tạo task vào
 
 ### Thao tác chung
 
-Mở popup của extension `TS Jira` thực hiện thao tác:
+Mở trang Jira của FIS ra và nhấn nút "Create tasks" trên header.
 
 - Chọn dự án muốn khai
 - Chọn component
@@ -43,8 +43,16 @@ Mở trình duyệt Chrome (hoặc Edge, Cốc Cốc, ...)
 
 ### Tiếp theo
 
-- Nhấn submit
+- Nhấn submit để tạo task dựa trên dữ liệu đã nhập
 
 Và chờ extension thực hiện nốt công việc.
 
 Bạn hãy vào User -> Timesheet để xem lại kết quả khai timesheet của mình nhé ^^
+
+### Lưu ý quan trọng
+
+- Bạn chỉ copy phần data, không copy header
+- Bạn cần xóa dòng trắng trong nội dung sau khi paste vào ô tasks
+- Nội dung task cần được nằm trên một dòng, không xuống dòng.
+- Mỗi lần khai chỉ chọn 1 component.
+- Nếu bạn cần khai task cho nhiều component, chia ra thành nhiều lần khai.

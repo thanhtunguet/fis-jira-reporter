@@ -1,17 +1,37 @@
 import type {PayloadAction} from '@reduxjs/toolkit';
 import {createSlice} from '@reduxjs/toolkit';
-import type {Component, Phase, Project} from 'src/models';
+import {Field, Model, ObjectList} from 'react3l';
+import {Phase} from 'src/models';
+import {Project, Component} from 'src/models';
 import {TypeOfWork} from 'src/models';
 
-export interface JiraState {
+export class JiraState extends Model {
+  @ObjectList(Project)
   projects: Project[];
+
+  @Field(String)
   selectedProject?: string;
+
+  @ObjectList(Component)
   components: Component[];
+
+  @Field(String)
   selectedComponent?: string;
+
+  @ObjectList(Phase)
   phases: Phase[];
+
+  @Field(Number)
   selectedPhase?: number;
+
+  @Field(String)
   reporter?: string;
+
+  @Field(String)
   typeOfWork?: TypeOfWork;
+
+  @Field(Boolean)
+  visible: boolean;
 }
 
 const initialState: JiraState = {
@@ -19,6 +39,7 @@ const initialState: JiraState = {
   components: [],
   phases: [],
   typeOfWork: TypeOfWork.Create,
+  visible: false,
 };
 
 export const jiraSlice = createSlice({
@@ -60,6 +81,9 @@ export const jiraSlice = createSlice({
     },
     setTypeOfWork(state, action: PayloadAction<TypeOfWork | undefined>) {
       state.typeOfWork = action.payload;
+    },
+    toggleModal(state) {
+      state.visible = !state.visible;
     },
   },
 });

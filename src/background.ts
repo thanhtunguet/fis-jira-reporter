@@ -1,11 +1,10 @@
-import {ExtensionMessage} from './config/extension-message';
+chrome.action.onClicked.addListener(() => {
+  chrome.runtime.openOptionsPage();
+});
 
-//
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  switch (message) {
-    case ExtensionMessage.OPEN_OPTIONS_PAGE:
-      chrome.runtime.openOptionsPage();
-      sendResponse('');
-      break;
+  if (message === 'openOptionsPage') {
+    chrome.runtime.openOptionsPage();
   }
+  sendResponse('');
 });

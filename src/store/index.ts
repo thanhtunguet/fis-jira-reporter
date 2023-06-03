@@ -1,14 +1,22 @@
 import {configureStore} from '@reduxjs/toolkit';
 import type {Store} from 'redux';
-import type {JiraState} from './slices/jira-slice';
+import {JiraState} from './slices/jira-slice';
 import {jiraSlice} from './slices/jira-slice';
+import {UserState} from './slices/user-slice';
+import {userSlice} from './slices/user-slice';
+import {ObjectField} from 'react3l';
 
 export const store: Store = configureStore({
   reducer: {
     jira: jiraSlice.reducer,
+    user: userSlice.reducer,
   },
 });
 
-export interface GlobalState {
+export class GlobalState {
+  @ObjectField(JiraState)
   jira: JiraState;
+
+  @ObjectField(UserState)
+  user: UserState;
 }

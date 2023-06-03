@@ -125,11 +125,14 @@ export enum TypeOfWork {
   Test = 'Test',
 }
 
-export interface TaskData {
+export class TaskData {
+  @MomentField()
   date: Moment;
 
+  @Field(Number)
   weekNum: number;
 
+  @Field(String)
   task: string;
 }
 
