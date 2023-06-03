@@ -8,7 +8,7 @@ export const DownloadTemplateButton = () => {
       type="link"
       icon={<DownloadOutlined />}
       onClick={() => {
-        document.getElementById('excel-template').click();
+        window.open(chrome.runtime.getURL('assets/jira.excel.template.xlsx'));
       }}>
       Download template
     </Button>

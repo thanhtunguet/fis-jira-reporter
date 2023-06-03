@@ -1,6 +1,6 @@
 {
   "name": "FIS Jira",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "description": "Jira timesheet automation tool for FIS employees",
   "manifest_version": 3,
   "icons": {
@@ -14,6 +14,9 @@
     "activeTab",
     "cookies",
     "tabs"
+  ],
+  "host_permissions": [
+    "https://jira.fis.com.vn/*"
   ],
   "action": {},
   "background": {
@@ -37,7 +40,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "src/jira.fis.com.vn.tsx"
+        "src/jira.fis.com.vn.tsx",
+        "assets/jira.excel.template.xlsx"
       ],
       "matches": [
         "https://jira.fis.com.vn/*"
