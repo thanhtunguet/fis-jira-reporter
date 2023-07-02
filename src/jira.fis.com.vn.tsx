@@ -11,13 +11,16 @@ import {useUser} from './services/use-user';
 import type {GlobalState} from './store';
 import {store} from './store';
 import {jiraSlice} from './store/slices/jira-slice';
+import type {AnyAction, Dispatch} from 'redux';
 
 const JiraApp: React.FC = () => {
   const [user, loading, isValidLicense] = useUser();
 
-  const visible = useSelector((state: GlobalState) => state.jira.visible);
+  const visible: boolean = useSelector(
+    (state: GlobalState) => state.jira.visible,
+  );
 
-  const dispatch = useDispatch();
+  const dispatch: Dispatch<AnyAction> = useDispatch();
 
   const handleCloseModal = React.useCallback(() => {
     dispatch(jiraSlice.actions.toggleModal());
@@ -56,6 +59,7 @@ const JiraApp: React.FC = () => {
 const rootDiv: HTMLDivElement = document.createElement('div');
 rootDiv.id = 'jira-root-div';
 document.body.appendChild(rootDiv);
+
 const root: Root = createRoot(rootDiv);
 root.render(
   <Provider store={store}>
@@ -68,6 +72,7 @@ const li = document.createElement('li');
 li.id = 'fis-jira-create';
 ul.appendChild(li);
 const liRoot = createRoot(li);
+
 liRoot.render(
   <a
     role="button"

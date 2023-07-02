@@ -21,7 +21,6 @@ import {useSelector} from 'react-redux';
 import {useBoolean} from 'react3l';
 import {firstValueFrom} from 'rxjs';
 import {DownloadTemplateButton} from 'src/components/DownloadTemplateButton';
-import {UserGuideButton} from 'src/components/UserGuideButton';
 import 'src/config/dayjs';
 import type {TaskData} from 'src/models';
 import {TypeOfWork} from 'src/models';
@@ -207,6 +206,7 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
               <Form.Item
                 name="project"
                 label="Project"
+                required={true}
                 initialValue={selectedProject}>
                 <Select
                   id="project"
@@ -216,7 +216,7 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
                       .toLowerCase()
                       .includes(input.toLowerCase())
                   }
-                  placeholder="Select a project"
+                  placeholder="Select a project, type to search"
                   className="w-100"
                   loading={loading}
                   onChange={(value) => {
@@ -234,6 +234,7 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
               <Form.Item
                 label="Component"
                 name="component"
+                required={true}
                 initialValue={selectedComponent}>
                 <Select
                   id="component"
@@ -258,6 +259,7 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
               <Form.Item
                 label="Phase"
                 name="phase"
+                required={true}
                 initialValue={selectedComponent}>
                 <Select
                   disabled={!selectedProject || !selectedComponent}
@@ -277,7 +279,8 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
 
             <Col span={12}>
               <Form.Item
-                label="Reporter"
+                label="Reporter (Username)"
+                required={true}
                 name="repoter"
                 initialValue={reporter}>
                 <Input
@@ -299,6 +302,7 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
               <Form.Item
                 label="Type of Work"
                 name="typeOfWork"
+                required={true}
                 initialValue={typeOfWork}>
                 <Select
                   disabled={
@@ -412,7 +416,8 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
                     <span>Task Data</span>
                     <DownloadTemplateButton />
                   </div>
-                }>
+                }
+                required={true}>
                 <Input.TextArea
                   disabled={
                     !selectedProject ||
@@ -420,7 +425,7 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
                     !selectedPhase ||
                     !reporter
                   }
-                  placeholder="Copy data only, exclude header and blank lines"
+                  placeholder="<STT>	<Date>	<WeekNumber>	<Task Description>"
                   id="excel"
                   onChange={(event) => setTaskValue(event.target.value)}
                   rows={10}
