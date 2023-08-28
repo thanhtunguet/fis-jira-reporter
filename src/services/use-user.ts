@@ -15,35 +15,30 @@ export function useUser(): [User, boolean, boolean] {
 
   React.useEffect(() => {
     setLoading(true);
-    licenseService
-      .getUsers()
-      .then((loadedUsers) => {
-        return loadedUsers;
-      })
-      .then((loadedUsers) => {
-        jiraRepository
-          .authSession()
-          .pipe(
-            concatMap((loggedUser) => {
-              dispatch(userSlice.actions.setUser(loggedUser));
-              return licenseService.hasLicense(loggedUser.name, loadedUsers);
-            }),
-          )
-          .pipe(
-            finalize(() => {
-              setLoading(false);
-            }),
-          )
-          .subscribe({
-            next: (isValid: boolean) => {
-              setIsValidLicense(isValid);
-            },
-            error: (error) => {
-              // eslint-disable-next-line no-console
-              console.error(error);
-            },
-          });
-      });
+    licenseService.getUsers().then(async (loadedUsers) => {
+      jiraRepository
+        .authSession()
+        .pipe(
+          concatMap(async (loggedUser) => {
+            dispatch(userSlice.actions.setUser(loggedUser));
+            return licenseService.hasLicense(loggedUser.name, loadedUsers);
+          }),
+        )
+        .pipe(
+          finalize(() => {
+            setLoading(false);
+          }),
+        )
+        .subscribe({
+          next: (isValid: boolean) => {
+            setIsValidLicense(isValid);
+          },
+          error: (error) => {
+            // eslint-disable-next-line no-console
+            console.error(error);
+          },
+        });
+    });
   }, [dispatch]);
 
   return [user, loading, isValidLicense];

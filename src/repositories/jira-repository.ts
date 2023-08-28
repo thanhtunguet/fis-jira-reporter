@@ -1,12 +1,11 @@
+import type {Moment} from 'moment';
 import {Repository} from 'react3l';
 import type {Observable} from 'rxjs';
 import {map} from 'rxjs';
 import {JIRA_HOST} from '../config/consts';
+import '../config/repository';
 import type {TypeOfWork} from '../models';
 import {Component, Phase, Project, Task, User} from '../models';
-import type {Moment} from 'moment';
-import moment from 'moment';
-import '../config/repository';
 
 export class JiraRepository extends Repository {
   constructor() {
@@ -120,10 +119,10 @@ export class JiraRepository extends Repository {
       .pipe(Repository.responseDataMapper<void>());
   }
 
-  public getDate(): Observable<Moment> {
+  public getDate(): Observable<Date> {
     return this.http.get('/secure/Dashboard.jspa').pipe(
       map((response) => {
-        return moment(response.headers.date);
+        return new Date(response.headers.date);
       }),
     );
   }

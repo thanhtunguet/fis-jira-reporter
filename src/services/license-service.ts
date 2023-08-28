@@ -24,9 +24,9 @@ class LicenseService extends Service {
       return false;
     }
     const expiredTimeString = users[lowercaseUsername];
-    const expiredTime = moment(expiredTimeString);
+    const expiredTime = new Date(expiredTimeString);
     const now = await firstValueFrom(jiraRepository.getDate());
-    return now.toDate().getTime() < expiredTime.toDate().getTime();
+    return now.getTime() < expiredTime.getTime();
   }
 }
 
