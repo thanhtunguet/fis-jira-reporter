@@ -4,7 +4,6 @@ import {Provider} from 'react-redux';
 import README from 'readme.mdx';
 import 'src/config/dayjs';
 import {store} from 'src/store';
-import 'bootstrap/dist/css/bootstrap.css';
 
 function OptionsApp() {
   return (

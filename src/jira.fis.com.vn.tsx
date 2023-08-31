@@ -69,6 +69,7 @@ root.render(
 
 const ul = document.querySelectorAll('.aui-nav.__skate')[0];
 const li = document.createElement('li');
+
 li.id = 'fis-jira-create';
 ul.appendChild(li);
 const liRoot = createRoot(li);

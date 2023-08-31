@@ -27,6 +27,7 @@ import {TypeOfWork} from 'src/models';
 import {jiraRepository} from 'src/repositories/jira-repository';
 import {useJiraState} from 'src/services/use-jira-state';
 import {userSelector} from 'src/store/selectors';
+import 'bootstrap/dist/css/bootstrap.css';
 
 const {RangePicker} = DatePicker;
 
@@ -112,14 +113,17 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
           currDate = currDate.add(1, 'day');
         }
       } else {
-        tasks = taskValue.split('\n').map((line) => {
-          const [_index, date, weekNum, task] = line.split('\t');
-          return {
-            date: moment(date),
-            weekNum: Number(weekNum),
-            task,
-          };
-        });
+        tasks = taskValue
+          .trim()
+          .split('\n')
+          .map((line) => {
+            const [_index, date, weekNum, task] = line.split('\t');
+            return {
+              date: moment(date),
+              weekNum: Number(weekNum),
+              task,
+            };
+          });
       }
       setLoading(true);
       const project = projects.find((p) => p.id === selectedProject);
@@ -242,6 +246,12 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
                   placeholder="Select a component"
                   className="w-100"
                   loading={loading}
+                  showSearch={true}
+                  filterOption={(input, option) =>
+                    (option?.label ?? '')
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
                   onChange={(value) => {
                     handleSelectComponent(value);
                   }}
@@ -266,6 +276,12 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
                   placeholder="Select a phase"
                   className="w-100"
                   loading={loading}
+                  showSearch={true}
+                  filterOption={(input, option) =>
+                    (option?.label ?? '')
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
                   onChange={(value) => {
                     handleSelectPhase(value);
                   }}
@@ -398,7 +414,15 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
                 </Col>
               </Row>
 
-              <Form.Item label="Task description">
+              <Form.Item
+                label="Task description"
+                extra={
+                  <span className="text-italic">
+                    Lưu ý: Autofill chỉ dùng cho các task trong tuần, không{' '}
+                    khuyến khích autofill một nội dung cho khoảng thời gian trên{' '}
+                    5 ngày liên tiếp.
+                  </span>
+                }>
                 <Input
                   placeholder="Enter description"
                   className="w-100"
