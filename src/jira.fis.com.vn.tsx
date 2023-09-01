@@ -11,12 +11,6 @@ import type {GlobalState} from './store';
 import {store} from './store';
 import {jiraSlice} from './store/slices/jira-slice';
 import type {AnyAction, Dispatch} from 'redux';
-import {localization} from 'react3l';
-
-localization.initialize({
-  lng: 'vi',
-  fallbackLng: 'vi',
-});
 
 const JiraApp: React.FC = () => {
   const [user, loading, isValidLicense] = useUser();

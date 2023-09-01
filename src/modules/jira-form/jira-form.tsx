@@ -34,6 +34,9 @@ const {RangePicker} = DatePicker;
 
 const Context = React.createContext({name: 'Default'});
 
+const gamImage =
+  'https://scontent-hkg4-1.xx.fbcdn.net/v/t1.6435-9/159821406_1436157616721922_1000696192939493171_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=174925&_nc_ohc=PKE8vhewMsIAX_fkGSU&_nc_ht=scontent-hkg4-1.xx&oh=00_AfAYot1Pr-xLuXoRoN8ec6Wn_gyLg-xbRmHeytVOtzVdCQ&oe=6519BDA9';
+
 export const JiraForm: FC<ModalProps> = () => {
   const contextValue = React.useMemo(() => ({name: 'Ant Design'}), []);
 
@@ -191,12 +194,14 @@ export const JiraForm: FC<ModalProps> = () => {
   const [reporters, handleSearchReporter] = useReporters();
 
   const filterOption = React.useCallback((input, option) => {
-    debugger;
-    console.log(input, option);
     return slugify(option?.searchValue ?? '')
       .toLowerCase()
       .includes(slugify(input.toLowerCase()));
   }, []);
+
+  const lowerCaseUsername = user?.name?.toLowerCase();
+  const isGam =
+    lowerCaseUsername === 'tungpt46' || lowerCaseUsername === 'gamhth2';
 
   return (
     <>
@@ -226,7 +231,9 @@ export const JiraForm: FC<ModalProps> = () => {
                       <div className="inline-flex align-items-center">
                         <img
                           alt={project.name}
-                          src={project.avatarUrls['24x24']}
+                          src={isGam ? gamImage : project.avatarUrls['24x24']}
+                          width={20}
+                          height={20}
                         />
                         <span className="mx-2">{project.key}</span>
                       </div>
@@ -257,10 +264,14 @@ export const JiraForm: FC<ModalProps> = () => {
                     label: (
                       <div className="inline-flex align-items-center">
                         <img
-                          src="https://static-00.iconduck.com/assets.00/figma-component-icon-2048x2048-87la2sw0.png"
+                          src={
+                            isGam
+                              ? gamImage
+                              : 'https://static-00.iconduck.com/assets.00/figma-component-icon-2048x2048-87la2sw0.png'
+                          }
                           alt=""
-                          width={16}
-                          height={16}
+                          width={20}
+                          height={20}
                           className="m-1"
                         />
                         <span className="mx-2">{component.name}</span>
@@ -290,7 +301,22 @@ export const JiraForm: FC<ModalProps> = () => {
                   options={phases.map((phase) => ({
                     value: phase.id,
                     searchValue: phase.phaseValue,
-                    label: phase.phaseValue,
+                    label: (
+                      <div className="inline-flex align-items-center">
+                        <img
+                          src={
+                            isGam
+                              ? gamImage
+                              : 'https://static-00.iconduck.com/assets.00/figma-component-icon-2048x2048-87la2sw0.png'
+                          }
+                          alt=""
+                          width={20}
+                          height={20}
+                          className="m-1"
+                        />
+                        <span className="mx-2">{phase.phaseValue}</span>
+                      </div>
+                    ),
                   }))}
                 />
               </Form.Item>
