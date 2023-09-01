@@ -1,7 +1,5 @@
-You do not have valid license. Please purchase a license or remove this extension.
-
-Email: [ht@thanhtunguet.info](mailto:ht@thanhtunguet.info)
+Bạn chưa có license sử dụng tiện ích này. Vui lòng thanh toán hoặc gỡ tiện ích này ra khỏi trình duyệt của bạn!
 
 Momo: [0367.615.612](tel:+84367615612)
 
-VPBank: [thanhtunguet](#)
+Giá: 39k/tháng!

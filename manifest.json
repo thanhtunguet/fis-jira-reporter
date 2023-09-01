@@ -24,8 +24,12 @@
   },
   "content_scripts": [
     {
+      "run_at": "document_idle",
       "js": [
-        "src/jira.fis.com.vn.tsx"
+        "./src/jira.fis.com.vn.tsx"
+      ],
+      "css": [
+        "./src/jira.scss"
       ],
       "matches": [
         "https://jira.fis.com.vn/*"

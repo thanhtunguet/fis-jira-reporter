@@ -1,11 +1,22 @@
 import type {Moment} from 'moment';
-import {Repository} from 'react3l';
+import {Field, Model, ObjectList, Repository} from 'react3l';
 import type {Observable} from 'rxjs';
 import {map} from 'rxjs';
 import {JIRA_HOST} from '../config/consts';
 import '../config/repository';
 import type {TypeOfWork} from '../models';
 import {Component, Phase, Project, Task, User} from '../models';
+
+class SearchUserResponse extends Model {
+  @Field(String)
+  footer: string;
+
+  @Field(Number)
+  total: number;
+
+  @ObjectList(User)
+  users: User[];
+}
 
 export class JiraRepository extends Repository {
   constructor() {
@@ -125,6 +136,19 @@ export class JiraRepository extends Repository {
         return new Date(response.headers.date);
       }),
     );
+  }
+
+  public searchUser(username: string): Observable<SearchUserResponse> {
+    return this.http
+      .get('/rest/api/1.0/users/picker', {
+        params: {
+          showAvatar: true,
+          query: username,
+        },
+      })
+      .pipe(
+        Repository.responseMapToModel<SearchUserResponse>(SearchUserResponse),
+      );
   }
 }
 

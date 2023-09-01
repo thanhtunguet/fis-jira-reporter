@@ -1,0 +1,7 @@
+@import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+
+.ant-form-item-label {
+    label::after {
+        content: ":";
+    }
+}

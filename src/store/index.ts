@@ -1,16 +1,20 @@
 import {configureStore} from '@reduxjs/toolkit';
-import type {Store} from 'redux';
-import {JiraState} from './slices/jira-slice';
-import {jiraSlice} from './slices/jira-slice';
-import {UserState} from './slices/user-slice';
-import {userSlice} from './slices/user-slice';
 import {ObjectField} from 'react3l';
+import type {Store} from 'redux';
+import logger from 'redux-logger';
+import {JiraState, jiraSlice} from './slices/jira-slice';
+import {UserState, userSlice} from './slices/user-slice';
 
 export const store: Store = configureStore({
   reducer: {
     jira: jiraSlice.reducer,
     user: userSlice.reducer,
   },
+  middleware: [
+    logger, //
+  ],
+  devTools: true,
+  enhancers: [],
 });
 
 export class GlobalState {

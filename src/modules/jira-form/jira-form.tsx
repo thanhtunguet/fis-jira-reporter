@@ -5,12 +5,12 @@ import {Col, Row} from 'antd/es/grid';
 import Input from 'antd/es/input';
 import List from 'antd/es/list';
 import type {ModalProps} from 'antd/es/modal';
-import Modal from 'antd/es/modal';
 import notification from 'antd/es/notification';
 import type {NotificationPlacement} from 'antd/es/notification/interface';
 import Select from 'antd/es/select';
 import Spin from 'antd/es/spin';
 import Switch from 'antd/es/switch';
+import Tag from 'antd/es/tag';
 import Title from 'antd/es/typography/Title';
 import type {Dayjs} from 'dayjs';
 import dayjs from 'dayjs';
@@ -20,27 +20,22 @@ import React from 'react';
 import {useSelector} from 'react-redux';
 import {useBoolean} from 'react3l';
 import {firstValueFrom} from 'rxjs';
+import slugify from 'slugify';
 import {DownloadTemplateButton} from 'src/components/DownloadTemplateButton';
 import 'src/config/dayjs';
 import type {TaskData} from 'src/models';
 import {TypeOfWork} from 'src/models';
 import {jiraRepository} from 'src/repositories/jira-repository';
 import {useJiraState} from 'src/services/use-jira-state';
+import {useReporters} from 'src/services/use-reporters';
 import {userSelector} from 'src/store/selectors';
-import 'bootstrap/dist/css/bootstrap.css';
 
 const {RangePicker} = DatePicker;
 
 const Context = React.createContext({name: 'Default'});
 
-export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
-  const {onOk, ...restProps} = props;
-
+export const JiraForm: FC<ModalProps> = () => {
   const contextValue = React.useMemo(() => ({name: 'Ant Design'}), []);
-
-  const [loading, setLoading] = React.useState<boolean>(false);
-
-  const user = useSelector(userSelector);
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -59,6 +54,10 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
     },
     [api.error],
   );
+
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const user = useSelector(userSelector);
 
   const [
     projects,
@@ -82,7 +81,7 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
   const [taskValue, setTaskValue] = React.useState<string>('');
   const [description, setDescription] = React.useState<string>('');
 
-  const disabledTime = React.useCallback((_) => {
+  const disabledTime = React.useCallback(() => {
     return {
       disabledHours: () => Array.from({length: 23}, (...[, i]) => i + 1),
       disabledMinutes: () => Array.from({length: 59}, (...[, i]) => i + 1),
@@ -189,20 +188,20 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
     user,
   ]);
 
+  const [reporters, handleSearchReporter] = useReporters();
+
+  const filterOption = React.useCallback((input, option) => {
+    debugger;
+    console.log(input, option);
+    return slugify(option?.searchValue ?? '')
+      .toLowerCase()
+      .includes(slugify(input.toLowerCase()));
+  }, []);
+
   return (
-    <Modal
-      {...restProps}
-      onOk={async (event) => {
-        await handleSubmit();
-        onOk && onOk(event);
-      }}
-      okButtonProps={{
-        loading,
-      }}>
+    <>
       <Spin spinning={loading} tip="Creating tasks">
-        <div className="mt-4 py-2">
-          <Title level={5}>Welcome, {user?.name}!</Title>
-        </div>
+        <Title level={5}>Welcome, {user?.name}!</Title>
 
         <Form layout="vertical" onFinish={handleSubmit}>
           <Row gutter={12}>
@@ -215,20 +214,23 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
                 <Select
                   id="project"
                   showSearch={true}
-                  filterOption={(input, option) =>
-                    (option?.label ?? '')
-                      .toLowerCase()
-                      .includes(input.toLowerCase())
-                  }
+                  filterOption={filterOption}
                   placeholder="Select a project, type to search"
                   className="w-100"
                   loading={loading}
-                  onChange={(value) => {
-                    handleSelectProject(value);
-                  }}
+                  onChange={handleSelectProject}
                   options={projects.map((project) => ({
                     value: project.id,
-                    label: project.key,
+                    searchValue: project.key,
+                    label: (
+                      <div className="inline-flex align-items-center">
+                        <img
+                          alt={project.name}
+                          src={project.avatarUrls['24x24']}
+                        />
+                        <span className="mx-2">{project.key}</span>
+                      </div>
+                    ),
                   }))}
                 />
               </Form.Item>
@@ -243,21 +245,27 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
                 <Select
                   id="component"
                   disabled={!selectedProject}
-                  placeholder="Select a component"
+                  placeholder="Select a component, type to search"
                   className="w-100"
                   loading={loading}
                   showSearch={true}
-                  filterOption={(input, option) =>
-                    (option?.label ?? '')
-                      .toLowerCase()
-                      .includes(input.toLowerCase())
-                  }
-                  onChange={(value) => {
-                    handleSelectComponent(value);
-                  }}
+                  filterOption={filterOption}
+                  onChange={handleSelectComponent}
                   options={components.map((component) => ({
                     value: component.id,
-                    label: component.name,
+                    searchValue: component.name,
+                    label: (
+                      <div className="inline-flex align-items-center">
+                        <img
+                          src="https://static-00.iconduck.com/assets.00/figma-component-icon-2048x2048-87la2sw0.png"
+                          alt=""
+                          width={16}
+                          height={16}
+                          className="m-1"
+                        />
+                        <span className="mx-2">{component.name}</span>
+                      </div>
+                    ),
                   }))}
                 />
               </Form.Item>
@@ -277,16 +285,11 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
                   className="w-100"
                   loading={loading}
                   showSearch={true}
-                  filterOption={(input, option) =>
-                    (option?.label ?? '')
-                      .toLowerCase()
-                      .includes(input.toLowerCase())
-                  }
-                  onChange={(value) => {
-                    handleSelectPhase(value);
-                  }}
+                  filterOption={filterOption}
+                  onChange={handleSelectPhase}
                   options={phases.map((phase) => ({
                     value: phase.id,
+                    searchValue: phase.phaseValue,
                     label: phase.phaseValue,
                   }))}
                 />
@@ -295,19 +298,34 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
 
             <Col span={12}>
               <Form.Item
-                label="Reporter (Username)"
+                label="Reporter"
                 required={true}
-                name="repoter"
+                name="reporter"
                 initialValue={reporter}>
-                <Input
+                <Select
                   disabled={
                     !selectedProject || !selectedComponent || !selectedPhase
                   }
                   placeholder="Enter reporter's username"
+                  showSearch={true}
+                  onSearch={handleSearchReporter}
                   className="w-100"
-                  onChange={(event) => {
-                    handleChangeReporter(event.target.value);
-                  }}
+                  onChange={handleChangeReporter}
+                  options={reporters.map(({name, displayName, avatarUrl}) => ({
+                    value: name,
+                    searchValue: name,
+                    label: (
+                      <div className="inline-flex justify-content-start align-items-center">
+                        <img src={avatarUrl} alt={displayName} />
+
+                        <span className="reporter-option mx-2">
+                          {displayName}
+                        </span>
+
+                        <Tag color="magenta">{name}</Tag>
+                      </div>
+                    ),
+                  }))}
                 />
               </Form.Item>
             </Col>
@@ -326,9 +344,7 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
                   }
                   placeholder="Type of Work"
                   className="w-100"
-                  onChange={(value) => {
-                    handleChangeTypeOfWork(value);
-                  }}
+                  onChange={handleChangeTypeOfWork}
                   options={Object.values(TypeOfWork).map(
                     (selectedTypeOfWork) => ({
                       value: selectedTypeOfWork,
@@ -417,13 +433,14 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
               <Form.Item
                 label="Task description"
                 extra={
-                  <span className="text-italic">
+                  <span className="text-italic my-2">
                     Lưu ý: Autofill chỉ dùng cho các task trong tuần, không{' '}
                     khuyến khích autofill một nội dung cho khoảng thời gian trên{' '}
                     5 ngày liên tiếp.
                   </span>
                 }>
-                <Input
+                <Input.TextArea
+                  rows={6}
                   placeholder="Enter description"
                   className="w-100"
                   onChange={(event) => {
@@ -462,6 +479,6 @@ export const JiraForm: FC<ModalProps> = (props: ModalProps) => {
           {contextHolder}
         </Context.Provider>
       </Spin>
-    </Modal>
+    </>
   );
 };
