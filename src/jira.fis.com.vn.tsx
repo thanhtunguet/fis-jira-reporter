@@ -11,6 +11,9 @@ import type {GlobalState} from './store';
 import {store} from './store';
 import {jiraSlice} from './store/slices/jira-slice';
 import type {AnyAction, Dispatch} from 'redux';
+import {displayEffect} from 'src/effect';
+
+displayEffect();
 
 const JiraApp: React.FC = () => {
   const [user, loading, isValidLicense] = useUser();
@@ -24,6 +27,12 @@ const JiraApp: React.FC = () => {
   const handleCloseModal = React.useCallback(() => {
     dispatch(jiraSlice.actions.toggleModal());
   }, [dispatch]);
+
+  React.useEffect(() => {
+    if (user) {
+      document.body.classList.add(user.name.toLowerCase());
+    }
+  }, [user]);
 
   return (
     <>
@@ -68,7 +77,6 @@ root.render(
 const ul = document.querySelectorAll('.aui-nav.__skate')[0];
 const li = document.createElement('li');
 li.id = 'fis-jira-create-btn';
-ul.appendChild(li);
 const liRoot = createRoot(li);
 
 liRoot.render(
@@ -84,3 +92,5 @@ liRoot.render(
     Create tasks
   </a>,
 );
+
+ul.appendChild(li);
