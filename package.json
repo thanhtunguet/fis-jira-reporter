@@ -1,6 +1,6 @@
 {
   "name": "jira-reporter",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Jira Reporter, for employee whose company using Jira",
   "repository": "https://github.com/thanhtunguet/jira-reporter",
   "author": "thanhtunguet <thanhtung.uet@gmail.com>",
@@ -24,6 +24,7 @@
     "antd": "^5.4.4",
     "axios": "~0.21",
     "bootstrap": "~4",
+    "classnames": "^2.3.2",
     "dayjs": "^1.11.7",
     "firebase": "^9.20.0",
     "i18next": "~20",
@@ -35,6 +36,7 @@
     "react-markdown": "^8.0.7",
     "react-redux": "^8.0.5",
     "react3l": "^7.0.0-rc4",
+    "reactstrap": "^9.2.0",
     "redux": "^4.2.1",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",

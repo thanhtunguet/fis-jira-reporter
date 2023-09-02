@@ -6,8 +6,8 @@ export function UserGuideButton() {
     <Button
       type="default"
       role="link"
-      onClick={() => {
-        chrome.runtime.sendMessage('openOptionsPage');
+      onClick={async () => {
+        await chrome.runtime.sendMessage('openOptionsPage');
       }}>
       User guide
     </Button>

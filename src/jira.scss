@@ -1,1 +1,23 @@
 @import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+
+.aui-button.aui-button-primary {
+  background-color: #f37022!important;
+}
+
+.aui-button.aui-button-danger {
+  &:hover {
+    background-color: darkred!important;
+  }
+}
+
+.modal {
+  .btn-close {
+    display: none;
+    visibility: hidden;
+  }
+}
+
+.jira-primary-spinner {
+  width: 1rem;
+  height: 1rem;
+}

@@ -1,19 +1,16 @@
-import Modal from 'antd/es/modal';
-import Spin from 'antd/es/spin';
 import React from 'react';
-import type {Root} from 'react-dom/client';
 import {createRoot} from 'react-dom/client';
 import {Provider, useDispatch, useSelector} from 'react-redux';
-import NoLicense from 'src/markdown/no-license.md';
-import {JiraForm} from './modules/jira-form/jira-form';
+import {JiraForm} from './modules/jira-form';
 import {useUser} from './services/use-user';
 import type {GlobalState} from './store';
 import {store} from './store';
 import {jiraSlice} from './store/slices/jira-slice';
 import type {AnyAction, Dispatch} from 'redux';
-import {displayEffect} from 'src/effect';
-
-displayEffect();
+import {NoLicenseModal} from 'src/modules/no-license-modal';
+import classNames from 'classnames';
+import {ExclamationCircleOutlined} from '@ant-design/icons';
+import {Spinner} from 'reactstrap';
 
 const JiraApp: React.FC = () => {
   const [user, loading, isValidLicense] = useUser();
@@ -34,63 +31,69 @@ const JiraApp: React.FC = () => {
     }
   }, [user]);
 
-  return (
-    <>
-      <Modal
-        width={1080}
-        closeIcon={<></>}
-        open={visible}
-        destroyOnClose={true}
-        maskClosable={false}
+  if (isValidLicense) {
+    return (
+      <JiraForm
+        isOpen={visible}
+        onOk={handleCloseModal}
         onCancel={handleCloseModal}
-        onOk={handleCloseModal}>
-        <Spin tip="Checking for your license" spinning={loading}>
-          {user && isValidLicense ? (
-            <JiraForm
-              open={visible}
-              onCancel={handleCloseModal}
-              onOk={handleCloseModal}
-              maskClosable={false}
-              closeIcon={<></>}
-            />
-          ) : (
-            <NoLicense />
-          )}
-        </Spin>
-      </Modal>
-    </>
+      />
+    );
+  }
+
+  return (
+    <NoLicenseModal
+      isOpen={visible}
+      onOk={handleCloseModal}
+      onCancel={handleCloseModal}
+      loading={loading}
+    />
   );
 };
 
-const rootDiv: HTMLDivElement = document.createElement('div');
-rootDiv.id = 'root';
-document.body.appendChild(rootDiv);
+function ToggleButton() {
+  const [, loading, isValidLicense] = useUser();
 
-const root: Root = createRoot(rootDiv);
-root.render(
-  <Provider store={store}>
-    <JiraApp />
-  </Provider>,
-);
+  return (
+    <a
+      role="button"
+      href="#"
+      onClick={() => {
+        store.dispatch(jiraSlice.actions.toggleModal());
+      }}
+      id="fis_jira_automation_create_tasks_button"
+      className={classNames('aui-button aui-button-primary aui-style', {
+        'aui-button-primary': isValidLicense,
+        'aui-button-danger': !isValidLicense,
+      })}
+      title="Create tasks using extension">
+      <span className="d-inline-flex align-items-center">
+        Create tasks
+        {loading && (
+          <Spinner
+            className="jira-primary-spinner ml-2"
+            type="border"
+            color="light"
+          />
+        )}
+        {!loading && !isValidLicense && (
+          <ExclamationCircleOutlined className="ml-2" />
+        )}
+      </span>
+    </a>
+  );
+}
 
 // Inject "Create tasks" button
 const ul = document.querySelectorAll('.aui-nav.__skate')[0];
 const li = document.createElement('li');
 li.id = 'fis-jira-create-btn';
 const liRoot = createRoot(li);
-
 liRoot.render(
-  <a
-    role="button"
-    href="#"
-    onClick={() => {
-      store.dispatch(jiraSlice.actions.toggleModal());
-    }}
-    id="fis_jira_automation_create_tasks_button"
-    className="aui-button aui-button-primary aui-style"
-    title="Create tasks using extension">
-    Create tasks
-  </a>,
+  <Provider store={store}>
+    <ToggleButton />
+    <JiraApp />
+  </Provider>,
 );
 
 ul.appendChild(li);

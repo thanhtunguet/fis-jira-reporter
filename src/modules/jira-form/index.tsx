@@ -4,9 +4,10 @@ import Form from 'antd/es/form';
 import {Col, Row} from 'antd/es/grid';
 import Input from 'antd/es/input';
 import List from 'antd/es/list';
-import type {ModalProps} from 'antd/es/modal';
+import type {ModalProps} from 'reactstrap';
 import notification from 'antd/es/notification';
 import type {NotificationPlacement} from 'antd/es/notification/interface';
+import type {SelectProps} from 'antd/es/select';
 import Select from 'antd/es/select';
 import Spin from 'antd/es/spin';
 import Switch from 'antd/es/switch';
@@ -15,7 +16,7 @@ import Title from 'antd/es/typography/Title';
 import type {Dayjs} from 'dayjs';
 import dayjs from 'dayjs';
 import moment from 'moment/moment';
-import type {FC} from 'react';
+import type {FC, ReactElement} from 'react';
 import React from 'react';
 import {useSelector} from 'react-redux';
 import {useBoolean} from 'react3l';
@@ -29,12 +30,16 @@ import {jiraRepository} from 'src/repositories/jira-repository';
 import {useJiraState} from 'src/services/use-jira-state';
 import {useReporters} from 'src/services/use-reporters';
 import {userSelector} from 'src/store/selectors';
+import type {ModalTemplateProps} from 'src/components/ModalTemplate';
+import {ModalTemplate} from 'src/components/ModalTemplate';
+import {sleep} from 'src/helpers/sleep';
 
 const {RangePicker} = DatePicker;
 
 const Context = React.createContext({name: 'Default'});
 
-export const JiraForm: FC<ModalProps> = () => {
+export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
+  const {isOpen, onOk, onCancel, ...restProps} = props;
   const contextValue = React.useMemo(() => ({name: 'Ant Design'}), []);
 
   const [api, contextHolder] = notification.useNotification();
@@ -190,17 +195,30 @@ export const JiraForm: FC<ModalProps> = () => {
 
   const [reporters, handleSearchReporter] = useReporters();
 
-  const filterOption = React.useCallback((input, option) => {
-    return slugify(option?.searchValue ?? '')
-      .toLowerCase()
-      .includes(slugify(input.toLowerCase()));
-  }, []);
+  const filterOption: SelectProps['filterOption'] = React.useCallback(
+    (
+      input: string,
+      option: {label: ReactElement; value: string; searchValue: string},
+    ) => {
+      return slugify(option?.searchValue ?? '')
+        .toLowerCase()
+        .includes(slugify(input.toLowerCase()));
+    },
+    [],
+  );
 
   return (
-    <>
+    <ModalTemplate
+      {...restProps}
+      isOpen={isOpen}
+      onOk={async () => {
+        await handleSubmit();
+        onOk && onOk();
+      }}
+      loading={loading}
+      onCancel={onCancel}>
       <Spin spinning={loading} tip="Creating tasks">
         <Title level={5}>Welcome, {user?.name}!</Title>
-
         <Form layout="vertical" onFinish={handleSubmit}>
           <Row gutter={12}>
             <Col span={12}>
@@ -221,7 +239,7 @@ export const JiraForm: FC<ModalProps> = () => {
                     value: project.id,
                     searchValue: project.key,
                     label: (
-                      <div className="inline-flex align-items-center">
+                      <div className="d-inline-flex align-items-center">
                         <img
                           alt={project.name}
                           src={project.avatarUrls['24x24']}
@@ -255,7 +273,7 @@ export const JiraForm: FC<ModalProps> = () => {
                     value: component.id,
                     searchValue: component.name,
                     label: (
-                      <div className="inline-flex align-items-center">
+                      <div className="d-inline-flex align-items-center">
                         <span className="mx-2">{component.name}</span>
                       </div>
                     ),
@@ -284,7 +302,7 @@ export const JiraForm: FC<ModalProps> = () => {
                     value: phase.id,
                     searchValue: phase.phaseValue,
                     label: (
-                      <div className="inline-flex align-items-center">
+                      <div className="d-inline-flex align-items-center">
                         <span className="mx-2">{phase.phaseValue}</span>
                       </div>
                     ),
@@ -312,7 +330,7 @@ export const JiraForm: FC<ModalProps> = () => {
                     value: name,
                     searchValue: name,
                     label: (
-                      <div className="inline-flex justify-content-start align-items-center">
+                      <div className="d-inline-flex justify-content-start align-items-center">
                         <img src={avatarUrl} alt={displayName} />
 
                         <span className="reporter-option mx-2">
@@ -476,6 +494,8 @@ export const JiraForm: FC<ModalProps> = () => {
           {contextHolder}
         </Context.Provider>
       </Spin>
-    </>
+    </ModalTemplate>
   );
 };
+
+export interface JiraFormProps extends ModalTemplateProps {}

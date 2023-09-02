@@ -1,6 +1,6 @@
 {
   "name": "FIS Jira Automation",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Jira timesheet automation tool for FIS staffs",
   "manifest_version": 3,
   "icons": {
