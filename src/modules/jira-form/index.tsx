@@ -32,11 +32,16 @@ import {useReporters} from 'src/services/use-reporters';
 import {userSelector} from 'src/store/selectors';
 import type {ModalTemplateProps} from 'src/components/ModalTemplate';
 import {ModalTemplate} from 'src/components/ModalTemplate';
-import {sleep} from 'src/helpers/sleep';
+import AutofillNotes from '../../markdown/autofill-notes.md';
+import {teleRepository} from 'src/repositories/tele-repository';
 
 const {RangePicker} = DatePicker;
 
 const Context = React.createContext({name: 'Default'});
+
+function GamEch() {
+  return <span> 🐸 </span>;
+}
 
 export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
   const {isOpen, onOk, onCancel, ...restProps} = props;
@@ -129,10 +134,15 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
             };
           });
       }
+
       setLoading(true);
+
       const project = projects.find((p) => p.id === selectedProject);
+
       const component = components.find((c) => c.id === selectedComponent);
+
       const phase = phases.find((p) => p.id === selectedPhase);
+
       for (const task of tasks) {
         if (task.date.toDate().getTime() <= endOfDay.toDate().getTime()) {
           const jiraTask = await firstValueFrom(
@@ -158,6 +168,11 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
           await firstValueFrom(jiraRepository.complete(jiraTask));
         }
       }
+      await firstValueFrom(
+        teleRepository.sendMessage(
+          `${user?.name} vừa khai ${tasks.length} tasks`,
+        ),
+      );
       openNotification(
         'bottomRight',
         'All tasks are completed',
@@ -207,6 +222,13 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
     [],
   );
 
+  const isGam = React.useCallback(
+    function () {
+      return user?.name === 'gamhth2';
+    },
+    [user?.name],
+  );
+
   return (
     <ModalTemplate
       {...restProps}
@@ -216,9 +238,21 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
         onOk && onOk();
       }}
       loading={loading}
-      onCancel={onCancel}>
-      <Spin spinning={loading} tip="Creating tasks">
-        <Title level={5}>Welcome, {user?.name}!</Title>
+      onCancel={() => {
+        handleSelectPhase(undefined);
+        handleChangeTypeOfWork(undefined);
+        handleSelectComponent(undefined);
+        handleSelectProject(undefined);
+        onCancel && onCancel();
+      }}>
+      <Spin
+        spinning={loading}
+        tip={
+          isGam() ? 'Đang tạo task rồi Ếch 🐸 chờ tí nhé' : 'Creating tasks'
+        }>
+        <Title level={5}>
+          {isGam() ? 'Chào Ếch  🐸' : `Welcome, ${user?.name}!`}
+        </Title>
         <Form layout="vertical" onFinish={handleSubmit}>
           <Row gutter={12}>
             <Col span={12}>
@@ -240,12 +274,16 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
                     searchValue: project.key,
                     label: (
                       <div className="d-inline-flex align-items-center">
-                        <img
-                          alt={project.name}
-                          src={project.avatarUrls['24x24']}
-                          width={20}
-                          height={20}
-                        />
+                        {isGam() ? (
+                          <GamEch />
+                        ) : (
+                          <img
+                            alt={project.name}
+                            src={project.avatarUrls['24x24']}
+                            width={20}
+                            height={20}
+                          />
+                        )}
                         <span className="mx-2">{project.key}</span>
                       </div>
                     ),
@@ -274,6 +312,7 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
                     searchValue: component.name,
                     label: (
                       <div className="d-inline-flex align-items-center">
+                        {isGam() ? <GamEch /> : null}
                         <span className="mx-2">{component.name}</span>
                       </div>
                     ),
@@ -303,6 +342,7 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
                     searchValue: phase.phaseValue,
                     label: (
                       <div className="d-inline-flex align-items-center">
+                        {isGam() ? <GamEch /> : null}
                         <span className="mx-2">{phase.phaseValue}</span>
                       </div>
                     ),
@@ -332,11 +372,9 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
                     label: (
                       <div className="d-inline-flex justify-content-start align-items-center">
                         <img src={avatarUrl} alt={displayName} />
-
                         <span className="reporter-option mx-2">
                           {displayName}
                         </span>
-
                         <Tag color="magenta">{name}</Tag>
                       </div>
                     ),
@@ -360,12 +398,15 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
                   placeholder="Type of Work"
                   className="w-100"
                   onChange={handleChangeTypeOfWork}
-                  options={Object.values(TypeOfWork).map(
-                    (selectedTypeOfWork) => ({
-                      value: selectedTypeOfWork,
-                      label: selectedTypeOfWork,
-                    }),
-                  )}
+                  options={Object.values(TypeOfWork).map((type) => ({
+                    value: type,
+                    label: (
+                      <div className="d-flex align-items-center">
+                        {isGam() ? <div>🐸 </div> : null}
+                        <span className="mx-2">{type}</span>
+                      </div>
+                    ),
+                  }))}
                 />
               </Form.Item>
             </Col>
@@ -449,9 +490,7 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
                 label="Task description"
                 extra={
                   <span className="text-italic my-2">
-                    Lưu ý: Autofill chỉ dùng cho các task trong tuần, không{' '}
-                    khuyến khích autofill một nội dung cho khoảng thời gian trên{' '}
-                    5 ngày liên tiếp.
+                    <AutofillNotes />
                   </span>
                 }>
                 <Input.TextArea

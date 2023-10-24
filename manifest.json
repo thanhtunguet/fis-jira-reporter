@@ -1,7 +1,7 @@
 {
   "name": "FIS Jira Automation",
-  "version": "1.4.3",
-  "description": "Jira timesheet automation tool for FIS staffs",
+  "version": "1.4.6",
+  "description": "Công cụ khai Timesheet cho nhân viên FPT - FIS, phát triển bởi Phạm Thanh Tùng & Lê Anh Dũng",
   "manifest_version": 3,
   "icons": {
     "16": "assets/icons/icon-16x16.png",

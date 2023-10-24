@@ -26,6 +26,7 @@ export function ModalTemplate(props: PropsWithChildren<ModalTemplateProps>) {
               className="jira-primary-spinner"
               type="border"
               color="light"
+              size={20}
             />
           )}
           <span className="mx-2">OK</span>

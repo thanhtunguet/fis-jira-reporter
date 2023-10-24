@@ -1,5 +1,4 @@
 import {onValue, ref} from 'firebase/database';
-import moment from 'moment';
 import {Service} from 'react3l';
 import {firstValueFrom} from 'rxjs';
 import {database} from 'src/config/database';

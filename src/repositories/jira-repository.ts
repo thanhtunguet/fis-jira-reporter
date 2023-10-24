@@ -9,17 +9,17 @@ import {Component, Phase, Project, Task, User} from '../models';
 
 class SearchUserResponse extends Model {
   @Field(String)
-  footer: string;
+  public footer: string;
 
   @Field(Number)
-  total: number;
+  public total: number;
 
   @ObjectList(User)
-  users: User[];
+  public users: User[];
 }
 
 export class JiraRepository extends Repository {
-  constructor() {
+  public constructor() {
     super();
     this.baseURL = JIRA_HOST;
   }
@@ -42,7 +42,7 @@ export class JiraRepository extends Repository {
       .pipe(Repository.responseMapToList<Phase>(Phase));
   }
 
-  authSession(): Observable<User> {
+  public authSession(): Observable<User> {
     return this.http
       .get('/rest/auth/1/session')
       .pipe(Repository.responseMapToModel<User>(User));

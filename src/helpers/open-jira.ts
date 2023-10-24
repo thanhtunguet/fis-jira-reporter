@@ -1,11 +1,10 @@
 import {JIRA_HOST} from 'src/config/consts';
 
 export function openJira() {
-  chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+  chrome.tabs.query({active: true, currentWindow: true}, async function (tabs) {
     // Get the current tab
-    var currentTab = tabs[0];
-
+    const currentTab = tabs[0];
     // Update the URL of the current tab
-    chrome.tabs.update(currentTab.id, {url: JIRA_HOST});
+    await chrome.tabs.update(currentTab.id, {url: JIRA_HOST});
   });
 }

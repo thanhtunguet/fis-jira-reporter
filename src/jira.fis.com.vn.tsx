@@ -1,4 +1,6 @@
+import type {FC} from 'react';
 import React from 'react';
+import type {Root} from 'react-dom/client';
 import {createRoot} from 'react-dom/client';
 import {Provider, useDispatch, useSelector} from 'react-redux';
 import {JiraForm} from './modules/jira-form';
@@ -51,7 +53,7 @@ const JiraApp: React.FC = () => {
   );
 };
 
-function ToggleButton() {
+const ToggleButton: FC = () => {
   const [, loading, isValidLicense] = useUser();
 
   return (
@@ -68,12 +70,13 @@ function ToggleButton() {
       })}
       title="Create tasks using extension">
       <span className="d-inline-flex align-items-center">
-        Create tasks
+        <span>Create tasks</span>
         {loading && (
           <Spinner
-            className="jira-primary-spinner ml-2"
+            className="jira-primary-spinner mx-2"
             type="border"
             color="light"
+            size={20}
           />
         )}
         {!loading && !isValidLicense && (
@@ -82,13 +85,13 @@ function ToggleButton() {
       </span>
     </a>
   );
-}
+};
 
 // Inject "Create tasks" button
-const ul = document.querySelectorAll('.aui-nav.__skate')[0];
-const li = document.createElement('li');
+const ul: Element = document.querySelectorAll('.aui-nav.__skate')[0];
+const li: HTMLLIElement = document.createElement('li');
 li.id = 'fis-jira-create-btn';
-const liRoot = createRoot(li);
+const liRoot: Root = createRoot(li);
 liRoot.render(
   <Provider store={store}>
     <ToggleButton />

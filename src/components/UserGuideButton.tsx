@@ -9,7 +9,7 @@ export function UserGuideButton() {
       onClick={async () => {
         await chrome.runtime.sendMessage('openOptionsPage');
       }}>
-      User guide
+      Guide
     </Button>
   );
 }
