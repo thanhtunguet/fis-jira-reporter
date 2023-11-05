@@ -45,10 +45,9 @@ function GamEch() {
 
 export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
   const {isOpen, onOk, onCancel, ...restProps} = props;
+
   const contextValue = React.useMemo(() => ({name: 'Ant Design'}), []);
-
   const [api, contextHolder] = notification.useNotification();
-
   const openNotification = React.useCallback(
     (
       placement: NotificationPlacement,
@@ -86,7 +85,7 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
   ] = useJiraState();
 
   const [isAutoFill, toggleAutoFill] = useBoolean(false);
-  const [dates, setDates] = React.useState<[Dayjs, Dayjs]>(null);
+  const [dates, setDates] = React.useState<[Dayjs, Dayjs] | null>(null);
   const [ignoreDates, setIgnoreDates] = React.useState<string[]>([]);
   const [taskValue, setTaskValue] = React.useState<string>('');
   const [description, setDescription] = React.useState<string>('');
@@ -147,7 +146,7 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
         if (task.date.toDate().getTime() <= endOfDay.toDate().getTime()) {
           const jiraTask = await firstValueFrom(
             jiraRepository.task(
-              user.name,
+              user?.name,
               reporter,
               project,
               component,
@@ -224,316 +223,320 @@ export const JiraForm: FC<ModalProps> = (props: JiraFormProps) => {
 
   const isGam = React.useCallback(
     function () {
-      return user?.name === 'gamhth2';
+      return (
+        user?.name === 'gamhth2' || user?.name?.toLowerCase() === 'tungpt46'
+      );
     },
     [user?.name],
   );
 
   return (
-    <ModalTemplate
-      {...restProps}
-      isOpen={isOpen}
-      onOk={async () => {
-        await handleSubmit();
-        onOk && onOk();
-      }}
-      loading={loading}
-      onCancel={() => {
-        handleSelectPhase(undefined);
-        handleChangeTypeOfWork(undefined);
-        handleSelectComponent(undefined);
-        handleSelectProject(undefined);
-        onCancel && onCancel();
-      }}>
-      <Spin
-        spinning={loading}
-        tip={
-          isGam() ? 'Đang tạo task rồi Ếch 🐸 chờ tí nhé' : 'Creating tasks'
-        }>
-        <Title level={5}>
-          {isGam() ? 'Chào Ếch  🐸' : `Welcome, ${user?.name}!`}
-        </Title>
-        <Form layout="vertical" onFinish={handleSubmit}>
-          <Row gutter={12}>
-            <Col span={12}>
-              <Form.Item
-                name="project"
-                label="Project"
-                required={true}
-                initialValue={selectedProject}>
-                <Select
-                  id="project"
-                  showSearch={true}
-                  filterOption={filterOption}
-                  placeholder="Select a project, type to search"
-                  className="w-100"
-                  loading={loading}
-                  onChange={handleSelectProject}
-                  options={projects.map((project) => ({
-                    value: project.id,
-                    searchValue: project.key,
-                    label: (
-                      <div className="d-inline-flex align-items-center">
-                        {isGam() ? (
-                          <GamEch />
-                        ) : (
-                          <img
-                            alt={project.name}
-                            src={project.avatarUrls['24x24']}
-                            width={20}
-                            height={20}
-                          />
-                        )}
-                        <span className="mx-2">{project.key}</span>
-                      </div>
-                    ),
-                  }))}
-                />
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                label="Component"
-                name="component"
-                required={true}
-                initialValue={selectedComponent}>
-                <Select
-                  id="component"
-                  disabled={!selectedProject}
-                  placeholder="Select a component, type to search"
-                  className="w-100"
-                  loading={loading}
-                  showSearch={true}
-                  filterOption={filterOption}
-                  onChange={handleSelectComponent}
-                  options={components.map((component) => ({
-                    value: component.id,
-                    searchValue: component.name,
-                    label: (
-                      <div className="d-inline-flex align-items-center">
-                        {isGam() ? <GamEch /> : null}
-                        <span className="mx-2">{component.name}</span>
-                      </div>
-                    ),
-                  }))}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={12}>
-            <Col span={12}>
-              <Form.Item
-                label="Phase"
-                name="phase"
-                required={true}
-                initialValue={selectedComponent}>
-                <Select
-                  disabled={!selectedProject || !selectedComponent}
-                  placeholder="Select a phase"
-                  className="w-100"
-                  loading={loading}
-                  showSearch={true}
-                  filterOption={filterOption}
-                  onChange={handleSelectPhase}
-                  options={phases.map((phase) => ({
-                    value: phase.id,
-                    searchValue: phase.phaseValue,
-                    label: (
-                      <div className="d-inline-flex align-items-center">
-                        {isGam() ? <GamEch /> : null}
-                        <span className="mx-2">{phase.phaseValue}</span>
-                      </div>
-                    ),
-                  }))}
-                />
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item
-                label="Reporter"
-                required={true}
-                name="reporter"
-                initialValue={reporter}>
-                <Select
-                  disabled={
-                    !selectedProject || !selectedComponent || !selectedPhase
-                  }
-                  placeholder="Enter reporter's username"
-                  showSearch={true}
-                  onSearch={handleSearchReporter}
-                  className="w-100"
-                  onChange={handleChangeReporter}
-                  options={reporters.map(({name, displayName, avatarUrl}) => ({
-                    value: name,
-                    searchValue: name,
-                    label: (
-                      <div className="d-inline-flex justify-content-start align-items-center">
-                        <img src={avatarUrl} alt={displayName} />
-                        <span className="reporter-option mx-2">
-                          {displayName}
-                        </span>
-                        <Tag color="magenta">{name}</Tag>
-                      </div>
-                    ),
-                  }))}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={12}>
-            <Col span={12}>
-              <Form.Item
-                label="Type of Work"
-                name="typeOfWork"
-                required={true}
-                initialValue={typeOfWork}>
-                <Select
-                  disabled={
-                    !selectedProject || !selectedComponent || !selectedPhase
-                  }
-                  placeholder="Type of Work"
-                  className="w-100"
-                  onChange={handleChangeTypeOfWork}
-                  options={Object.values(TypeOfWork).map((type) => ({
-                    value: type,
-                    label: (
-                      <div className="d-flex align-items-center">
-                        {isGam() ? <div>🐸 </div> : null}
-                        <span className="mx-2">{type}</span>
-                      </div>
-                    ),
-                  }))}
-                />
-              </Form.Item>
-            </Col>
-
-            <Col span={12}>
-              <Form.Item label="Auto fill">
-                <Switch
-                  checkedChildren="Enabled"
-                  unCheckedChildren="Disabled"
-                  checked={isAutoFill}
-                  onChange={(_value, _e) => toggleAutoFill()}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {isAutoFill ? (
-            <>
-              <Row gutter={12}>
-                <Col span={12}>
-                  <Form.Item label="Date range">
-                    <RangePicker
-                      className="w-100"
-                      value={dates}
-                      showTime
-                      placement="topLeft"
-                      disabledTime={disabledTime}
-                      disabledDate={(current) => {
-                        return current.day() <= 0 || current.day() >= 6;
-                      }}
-                      onChange={(selectedDates) =>
-                        setDates([
-                          selectedDates[0].startOf('day'),
-                          selectedDates[1].startOf('day'),
-                        ])
-                      }
-                    />
-                  </Form.Item>
-                </Col>
-
-                <Col span={12}>
-                  <Form.Item label="Ignore dates">
-                    <DatePicker
-                      className="w-100"
-                      disabledDate={(current) => {
-                        return current.day() <= 0 || current.day() >= 6;
-                      }}
-                      onChange={(date, _dateString) => {
-                        const newState = [
-                          ...ignoreDates,
-                          date.format('YYYY-MM-DD'),
-                        ];
-                        setIgnoreDates(newState);
-                      }}
-                    />
-                    {ignoreDates && ignoreDates.length > 0 && (
-                      <>
-                        <List
-                          dataSource={ignoreDates}
-                          renderItem={(item: string) => (
-                            <List.Item>
-                              {dayjs(item).format('ddd, DD/MM/YYYY')}
-                            </List.Item>
+    <>
+      <ModalTemplate
+        {...restProps}
+        isOpen={isOpen}
+        onOk={async () => {
+          await handleSubmit();
+          onOk && onOk();
+        }}
+        loading={loading}
+        onCancel={() => {
+          handleSelectPhase(undefined);
+          handleChangeTypeOfWork(undefined);
+          handleSelectComponent(undefined);
+          handleSelectProject(undefined);
+          onCancel && onCancel();
+        }}>
+        <Spin
+          spinning={loading}
+          tip={
+            isGam() ? 'Đang tạo task rồi Ếch 🐸 chờ tí nhé' : 'Creating tasks'
+          }>
+          <Title level={5}>
+            {isGam() ? 'Chào Ếch  🐸' : `Welcome, ${user?.name}!`}
+          </Title>
+          <Form layout="vertical" onFinish={handleSubmit}>
+            <Row gutter={12}>
+              <Col span={12}>
+                <Form.Item
+                  name="project"
+                  label="Project"
+                  required={true}
+                  initialValue={selectedProject}>
+                  <Select
+                    id="project"
+                    showSearch={true}
+                    filterOption={filterOption}
+                    placeholder="Select a project, type to search"
+                    className="w-100"
+                    loading={loading}
+                    onChange={handleSelectProject}
+                    options={projects.map((project) => ({
+                      value: project.id,
+                      searchValue: project.key,
+                      label: (
+                        <div className="d-inline-flex align-items-center">
+                          {isGam() ? (
+                            <GamEch />
+                          ) : (
+                            <img
+                              alt={project.name}
+                              src={project.avatarUrls['24x24']}
+                              width={20}
+                              height={20}
+                            />
                           )}
-                        />
-                        <Button
-                          danger
-                          onClick={(_e: any) => {
-                            const newState = ignoreDates.slice(0, -1);
-                            setIgnoreDates(newState);
-                          }}>
-                          Remove
-                        </Button>
-                      </>
-                    )}
-                  </Form.Item>
-                </Col>
-              </Row>
+                          <span className="mx-2">{project.key}</span>
+                        </div>
+                      ),
+                    }))}
+                  />
+                </Form.Item>
+              </Col>
 
-              <Form.Item
-                label="Task description"
-                extra={
-                  <span className="text-italic my-2">
-                    <AutofillNotes />
-                  </span>
-                }>
-                <Input.TextArea
-                  rows={6}
-                  placeholder="Enter description"
-                  className="w-100"
-                  onChange={(event) => {
-                    setDescription(event.target.value);
-                  }}
-                />
-              </Form.Item>
-            </>
-          ) : (
-            <>
-              <Form.Item
-                label={
-                  <div className="w100 d-flex justify-content-between align-items-center">
-                    <span>Task Data</span>
-                    <DownloadTemplateButton />
-                  </div>
-                }
-                required={true}>
-                <Input.TextArea
-                  disabled={
-                    !selectedProject ||
-                    !selectedComponent ||
-                    !selectedPhase ||
-                    !reporter
+              <Col span={12}>
+                <Form.Item
+                  label="Component"
+                  name="component"
+                  required={true}
+                  initialValue={selectedComponent}>
+                  <Select
+                    id="component"
+                    disabled={!selectedProject}
+                    placeholder="Select a component, type to search"
+                    className="w-100"
+                    loading={loading}
+                    showSearch={true}
+                    filterOption={filterOption}
+                    onChange={handleSelectComponent}
+                    options={components.map((component) => ({
+                      value: component.id,
+                      searchValue: component.name,
+                      label: (
+                        <div className="d-inline-flex align-items-center">
+                          {isGam() ? <GamEch /> : null}
+                          <span className="mx-2">{component.name}</span>
+                        </div>
+                      ),
+                    }))}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={12}>
+              <Col span={12}>
+                <Form.Item
+                  label="Phase"
+                  name="phase"
+                  required={true}
+                  initialValue={selectedComponent}>
+                  <Select
+                    disabled={!selectedProject || !selectedComponent}
+                    placeholder="Select a phase"
+                    className="w-100"
+                    loading={loading}
+                    showSearch={true}
+                    filterOption={filterOption}
+                    onChange={handleSelectPhase}
+                    options={phases.map((phase) => ({
+                      value: phase.id,
+                      searchValue: phase.phaseValue,
+                      label: (
+                        <div className="d-inline-flex align-items-center">
+                          {isGam() ? <GamEch /> : null}
+                          <span className="mx-2">{phase.phaseValue}</span>
+                        </div>
+                      ),
+                    }))}
+                  />
+                </Form.Item>
+              </Col>
+
+              <Col span={12}>
+                <Form.Item
+                  label="Reporter"
+                  required={true}
+                  name="reporter"
+                  initialValue={reporter}>
+                  <Select
+                    disabled={
+                      !selectedProject || !selectedComponent || !selectedPhase
+                    }
+                    placeholder="Enter reporter's username"
+                    showSearch={true}
+                    onSearch={handleSearchReporter}
+                    className="w-100"
+                    onChange={handleChangeReporter}
+                    options={reporters.map(
+                      ({name, displayName, avatarUrl}) => ({
+                        value: name,
+                        searchValue: name,
+                        label: (
+                          <div className="d-inline-flex justify-content-start align-items-center">
+                            <img src={avatarUrl} alt={displayName} />
+                            <span className="reporter-option mx-2">
+                              {displayName}
+                            </span>
+                            <Tag color="magenta">{name}</Tag>
+                          </div>
+                        ),
+                      }),
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={12}>
+              <Col span={12}>
+                <Form.Item
+                  label="Type of Work"
+                  name="typeOfWork"
+                  required={true}
+                  initialValue={typeOfWork}>
+                  <Select
+                    disabled={
+                      !selectedProject || !selectedComponent || !selectedPhase
+                    }
+                    placeholder="Type of Work"
+                    className="w-100"
+                    onChange={handleChangeTypeOfWork}
+                    options={Object.values(TypeOfWork).map((type) => ({
+                      value: type,
+                      label: (
+                        <div className="d-flex align-items-center">
+                          {isGam() ? <div>🐸 </div> : null}
+                          <span className="mx-2">{type}</span>
+                        </div>
+                      ),
+                    }))}
+                  />
+                </Form.Item>
+              </Col>
+
+              <Col span={12}>
+                <Form.Item label="Auto fill">
+                  <Switch
+                    checkedChildren="Enabled"
+                    unCheckedChildren="Disabled"
+                    checked={isAutoFill}
+                    onChange={(_value, _e) => toggleAutoFill()}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            {isAutoFill ? (
+              <>
+                <Row gutter={12}>
+                  <Col span={12}>
+                    <Form.Item label="Date range">
+                      <RangePicker
+                        className="w-100"
+                        value={dates}
+                        showTime
+                        placement="topLeft"
+                        disabledTime={disabledTime}
+                        disabledDate={(current) => {
+                          return current.day() <= 0 || current.day() >= 6;
+                        }}
+                        onChange={(selectedDates) =>
+                          setDates([
+                            selectedDates[0].startOf('day'),
+                            selectedDates[1].startOf('day'),
+                          ])
+                        }
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col span={12}>
+                    <Form.Item label="Ignore dates">
+                      <DatePicker
+                        className="w-100"
+                        disabledDate={(current) => {
+                          return current.day() <= 0 || current.day() >= 6;
+                        }}
+                        onChange={(date, _dateString) => {
+                          const newState = [
+                            ...ignoreDates,
+                            date?.format('YYYY-MM-DD'),
+                          ];
+                          setIgnoreDates(newState);
+                        }}
+                      />
+                      {ignoreDates && ignoreDates.length > 0 && (
+                        <>
+                          <List
+                            dataSource={ignoreDates}
+                            renderItem={(item: string) => (
+                              <List.Item>
+                                {dayjs(item).format('ddd, DD/MM/YYYY')}
+                              </List.Item>
+                            )}
+                          />
+                          <Button
+                            danger
+                            onClick={(_e: any) => {
+                              const newState = ignoreDates.slice(0, -1);
+                              setIgnoreDates(newState);
+                            }}>
+                            Remove
+                          </Button>
+                        </>
+                      )}
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Form.Item
+                  label="Task description"
+                  extra={
+                    <span className="text-italic my-2">
+                      <AutofillNotes />
+                    </span>
+                  }>
+                  <Input.TextArea
+                    rows={6}
+                    placeholder="Enter description"
+                    className="w-100"
+                    onChange={(event) => {
+                      setDescription(event.target.value);
+                    }}
+                  />
+                </Form.Item>
+              </>
+            ) : (
+              <>
+                <Form.Item
+                  label={
+                    <div className="w100 d-flex justify-content-between align-items-center">
+                      <span>Task Data</span>
+                      <DownloadTemplateButton />
+                    </div>
                   }
-                  placeholder="<STT>	<Date>	<WeekNumber>	<Task Description>"
-                  id="excel"
-                  onChange={(event) => setTaskValue(event.target.value)}
-                  rows={10}
-                />
-              </Form.Item>
-            </>
-          )}
-        </Form>
-        <Context.Provider value={contextValue}>
-          {contextHolder}
-        </Context.Provider>
-      </Spin>
-    </ModalTemplate>
+                  required={true}>
+                  <Input.TextArea
+                    disabled={
+                      !selectedProject ||
+                      !selectedComponent ||
+                      !selectedPhase ||
+                      !reporter
+                    }
+                    placeholder="<STT>	<Date>	<WeekNumber>	<Task Description>"
+                    id="excel"
+                    onChange={(event) => setTaskValue(event.target.value)}
+                    rows={10}
+                  />
+                </Form.Item>
+              </>
+            )}
+          </Form>
+        </Spin>
+      </ModalTemplate>
+      <Context.Provider value={contextValue}>{contextHolder}</Context.Provider>
+    </>
   );
 };
 

@@ -1,20 +1,6 @@
 import React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
 import type {Component, Phase, Project, TypeOfWork} from 'src/models';
 import {jiraRepository} from 'src/repositories/jira-repository';
-import type {GlobalState} from 'src/store';
-import {jiraSlice} from 'src/store/slices/jira-slice';
-
-const {
-  setProjects,
-  setComponents,
-  setPhases,
-  setReporter,
-  setTypeOfWork,
-  selectProject,
-  selectComponent,
-  selectPhase,
-} = jiraSlice.actions;
 
 export function useJiraState(): [
   Project[],
@@ -31,95 +17,69 @@ export function useJiraState(): [
   TypeOfWork,
   (typeOfWork: TypeOfWork) => void,
 ] {
-  const {
-    projects,
-    selectedProject,
-    components,
-    selectedComponent,
-    phases,
-    selectedPhase,
-    reporter,
-    typeOfWork,
-  } = useSelector((state: GlobalState) => state.jira);
+  const [projects, setProjects] = React.useState<Project[]>([]);
+  const [selectedProjectKey, setSelectedProjectKey] =
+    React.useState<string>('');
 
-  const dispatch = useDispatch();
+  const [components, setComponents] = React.useState<Component[]>([]);
+  const [selectedComponent, setSelectedComponent] = React.useState<
+    string | undefined
+  >();
+
+  const [phases, setPhases] = React.useState<Phase[]>([]);
+  const [selectedPhase, setSelectedPhase] = React.useState<
+    number | undefined
+  >();
+
+  const [selectedReporter, setSelectedReporter] = React.useState<
+    string | undefined
+  >();
+
+  const [selectedTypeOfWork, setSelectedTypeOfWork] = React.useState<
+    TypeOfWork | undefined
+  >();
 
   React.useEffect(() => {
     jiraRepository.projects().subscribe({
       next: (listProjects) => {
-        dispatch(setProjects(listProjects));
+        setProjects(listProjects);
       },
     });
-  }, [dispatch]);
+  }, []);
 
   React.useEffect(() => {
-    if (selectedProject) {
-      jiraRepository.components(selectedProject).subscribe({
+    if (selectedProjectKey) {
+      jiraRepository.components(selectedProjectKey).subscribe({
         next: (listComponents) => {
-          dispatch(setComponents(listComponents));
+          setComponents(listComponents);
         },
       });
     }
-  }, [selectedProject, dispatch]);
+  }, [selectedProjectKey]);
 
   React.useEffect(() => {
-    if (selectedProject && selectedComponent) {
-      jiraRepository.phases(selectedProject).subscribe({
+    if (selectedProjectKey && selectedComponent) {
+      jiraRepository.phases(selectedProjectKey).subscribe({
         next: (listPhases) => {
-          dispatch(setPhases(listPhases));
+          setPhases(listPhases);
         },
       });
     }
-  }, [selectedProject, selectedComponent, dispatch]);
-
-  const handleSelectProject = React.useCallback(
-    (projectId: string) => {
-      dispatch(selectProject(projectId));
-    },
-    [dispatch],
-  );
-
-  const handleSelectComponent = React.useCallback(
-    (componentId: string) => {
-      dispatch(selectComponent(componentId));
-    },
-    [dispatch],
-  );
-
-  const handleSelectPhase = React.useCallback(
-    (phaseId: number) => {
-      dispatch(selectPhase(phaseId));
-    },
-    [dispatch],
-  );
-
-  const handleChangeReporter = React.useCallback(
-    (username: string) => {
-      dispatch(setReporter(username));
-    },
-    [dispatch],
-  );
-
-  const handleChangeTypeOfWork = React.useCallback(
-    (selectedTypeOfWork: TypeOfWork) => {
-      dispatch(setTypeOfWork(selectedTypeOfWork));
-    },
-    [dispatch],
-  );
+  }, [selectedProjectKey, selectedComponent]);
 
   return [
     projects,
-    selectedProject,
-    handleSelectProject,
+    selectedProjectKey,
+    setSelectedProjectKey,
     components,
     selectedComponent,
-    handleSelectComponent,
+    setSelectedComponent,
     phases,
     selectedPhase,
-    handleSelectPhase,
-    reporter,
-    handleChangeReporter,
-    typeOfWork,
-    handleChangeTypeOfWork,
+    setSelectedPhase,
+    selectedReporter,
+    setSelectedReporter,
+    selectedTypeOfWork,
+    setSelectedTypeOfWork,
   ];
 }

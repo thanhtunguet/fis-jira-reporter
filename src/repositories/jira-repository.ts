@@ -30,6 +30,12 @@ export class JiraRepository extends Repository {
       .pipe(Repository.responseMapToList<Project>(Project));
   }
 
+  public project(key: string): Observable<Project> {
+    return this.http
+      .get(`/rest/api/2/project/${key}`)
+      .pipe(Repository.responseMapToModel<Project>(Project));
+  }
+
   public components(projectId: string): Observable<Component[]> {
     return this.http
       .get(`/rest/api/2/project/${projectId}/components`)

@@ -13,7 +13,7 @@ const initialState: UserState = {
 };
 
 export const userSlice = createSlice({
-  name: 'jira',
+  name: 'user',
   initialState,
   reducers: {
     setUser(state, action: PayloadAction<User>) {
