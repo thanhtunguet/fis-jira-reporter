@@ -18,10 +18,6 @@
     "service_worker": "./src/background.ts",
     "type": "module"
   },
-  "options_ui": {
-    "page": "./src/modules/options/options.html",
-    "open_in_tab": true
-  },
   "content_scripts": [
     {
       "run_at": "document_idle",
@@ -40,7 +36,8 @@
     {
       "resources": [
         "src/jira.fis.com.vn.tsx",
-        "assets/jira.excel.template.xlsx"
+        "assets/*.xlsx",
+        "assets/*.png"
       ],
       "matches": [
         "https://jira.fis.com.vn/*"

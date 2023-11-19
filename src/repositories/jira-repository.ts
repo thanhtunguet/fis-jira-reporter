@@ -6,6 +6,8 @@ import {JIRA_HOST} from '../config/consts';
 import '../config/repository';
 import type {TypeOfWork} from '../models';
 import {Component, Phase, Project, Task, User} from '../models';
+import moment from 'moment/moment';
+import type {IssueSearchResponse} from 'src/models/issue-search';
 
 class SearchUserResponse extends Model {
   @Field(String)
@@ -28,6 +30,20 @@ export class JiraRepository extends Repository {
     return this.http
       .get('/rest/api/2/project')
       .pipe(Repository.responseMapToList<Project>(Project));
+  }
+
+  public getIssuesInCurrentYear(
+    projectId: string,
+  ): Observable<IssueSearchResponse> {
+    const currentYear = moment().startOf('year').format('YYYY-MM-DD');
+    const jql = `project = ${projectId} AND due >= "${currentYear}" ORDER BY due DESC`;
+    return this.http
+      .get('/rest/api/2/search', {
+        params: {
+          jql,
+        },
+      })
+      .pipe(Repository.responseDataMapper<IssueSearchResponse>());
   }
 
   public components(projectId: string): Observable<Component[]> {

@@ -1,45 +1,47 @@
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {concatMap, finalize} from 'rxjs';
+import {firstValueFrom} from 'rxjs';
 import type {User} from 'src/models';
 import {jiraRepository} from 'src/repositories/jira-repository';
 import {licenseService} from 'src/services/license-service';
-import {userSelector} from 'src/store/selectors';
+import {
+  licenseSelector,
+  userIsLoadingSelector,
+  userSelector,
+} from 'src/store/selectors';
 import {userSlice} from 'src/store/slices/user-slice';
+import type {LicenseStatus} from 'src/types/license-status';
+import * as Sentry from '@sentry/react';
 
-export function useUser(): [User, boolean, boolean] {
+const {setUser, setIsLoading, setLicenseStatus} = userSlice.actions;
+
+export function useUser(): [User, boolean, LicenseStatus] {
   const user = useSelector(userSelector);
+  const isLoading = useSelector(userIsLoadingSelector);
   const dispatch = useDispatch();
-  const [isValidLicense, setIsValidLicense] = React.useState<boolean>(false);
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const licenseStatus = useSelector(licenseSelector);
 
-  React.useEffect(() => {
-    setLoading(true);
-    licenseService.getUsers().then(async (loadedUsers) => {
-      jiraRepository
-        .authSession()
-        .pipe(
-          concatMap(async (loggedUser) => {
-            dispatch(userSlice.actions.setUser(loggedUser));
-            return licenseService.hasLicense(loggedUser.name, loadedUsers);
-          }),
-        )
-        .pipe(
-          finalize(() => {
-            setLoading(false);
-          }),
-        )
-        .subscribe({
-          next: (isValid: boolean) => {
-            setIsValidLicense(isValid);
-          },
-          error: (error) => {
-            // eslint-disable-next-line no-console
-            console.error(error);
-          },
-        });
-    });
+  const handleCheckLicense = React.useCallback(async () => {
+    dispatch(setIsLoading(true));
+    try {
+      const currentUser = await firstValueFrom(jiraRepository.authSession());
+      dispatch(setUser(currentUser));
+      const users = await licenseService.getUsers();
+      const status = await licenseService.getLicenseStatus(
+        currentUser.name,
+        users,
+      );
+      dispatch(setLicenseStatus(status));
+    } catch (error) {
+      Sentry.captureException(error);
+    } finally {
+      dispatch(setIsLoading(false));
+    }
   }, [dispatch]);
 
-  return [user, loading, isValidLicense];
+  React.useEffect(() => {
+    handleCheckLicense();
+  }, [handleCheckLicense]);
+
+  return [user, isLoading, licenseStatus];
 }

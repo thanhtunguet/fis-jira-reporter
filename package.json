@@ -32,6 +32,7 @@
     "@mdx-js/react": "^1",
     "@redux-devtools/extension": "^3.2.5",
     "@reduxjs/toolkit": "^1.9.7",
+    "@sentry/react": "^7.80.1",
     "@swc/helpers": "^0.4.12",
     "antd": "^5.10.2",
     "axios": "~0.21",
