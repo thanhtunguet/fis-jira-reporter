@@ -1,6 +1,6 @@
+import type {ReactElement} from 'react';
 import React from 'react';
 import './TaskButton.scss';
-import type {PropsWithChildren, ReactElement} from 'react';
 import type {GlobalState} from 'src/store';
 import {store} from 'src/store';
 import classNames from 'classnames';

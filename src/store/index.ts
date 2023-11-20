@@ -9,6 +9,7 @@ import {jiraSlice, JiraState} from 'src/store/slices/jira-slice';
 
 const persistConfig: PersistConfig<GlobalState> = {
   key: 'root',
+  blacklist: ['jira'],
   storage: {
     getItem<T>(key: string): Promise<T> {
       return new Promise<T>((resolve) => {

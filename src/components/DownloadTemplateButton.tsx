@@ -1,6 +1,6 @@
 import Button from 'antd/es/button';
 import {DownloadOutlined} from '@ant-design/icons';
-import type {FC, ReactNode} from 'react';
+import type {FC} from 'react';
 
 const DownloadTemplateButton: FC = (): JSX.Element => {
   return (

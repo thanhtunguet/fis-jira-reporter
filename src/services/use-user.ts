@@ -16,7 +16,7 @@ const {
 } = userSlice.actions;
 
 export function useUser(): [
-  User?,
+  User | null | undefined,
   boolean?,
   LicenseStatus?, //
 ] {

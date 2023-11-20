@@ -1,7 +1,5 @@
 import type {FC} from 'react';
 import React from 'react';
-import type {ModalTemplateProps} from 'src/components/ModalTemplate';
-import ModalTemplate from 'src/components/ModalTemplate';
 import {useDispatch, useSelector} from 'react-redux';
 import type {GlobalState} from 'src/store';
 import {jiraSlice} from 'src/store/slices/jira-slice';
@@ -15,9 +13,11 @@ import {isGam} from 'src/helpers/gam';
 import GamEch from 'src/components/GamEch';
 import {Col, Row, Spin} from 'antd';
 import type {OptionType} from 'src/types/OptionType';
+import Modal from 'antd/lib/modal';
+import Input from 'antd/lib/input';
+import {TypeOfWork} from 'src/models';
 
 const formItemProps: FormItemProps = {
-  className: 'px-4',
   labelCol: {
     span: 8,
   },
@@ -32,14 +32,10 @@ function filterFunc(input: string, option?: OptionType) {
     .includes(slugify(input.toLowerCase()));
 }
 
-const TaskModal: FC<TaskModalProps> = (props): JSX.Element => {
-  const {
-    children,
-    ...restProps
-    //
-  } = props;
-
+const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
   const {user} = useSelector((state: GlobalState) => state.user);
+
+  const {isVisible} = useSelector((state: GlobalState) => state.jira);
 
   const dispatch = useDispatch();
 
@@ -48,9 +44,14 @@ const TaskModal: FC<TaskModalProps> = (props): JSX.Element => {
   const [form] = Form.useForm<JiraForm>();
 
   return (
-    <ModalTemplate
-      {...restProps}
-      size="sm"
+    <Modal
+      width={1000}
+      closable={false}
+      maskClosable={false}
+      centered={true}
+      closeIcon={null}
+      destroyOnClose={true}
+      open={isVisible}
       title={`Welcome ${user?.name}`}
       onOk={() => {
         dispatch(jiraSlice.actions.setIsVisible(false));
@@ -58,11 +59,9 @@ const TaskModal: FC<TaskModalProps> = (props): JSX.Element => {
       onCancel={() => {
         dispatch(jiraSlice.actions.setIsVisible(false));
       }}>
-      <></>
-      {children}
       <Spin spinning={isLoadingProjects} tip="Loading">
         <Form form={form}>
-          <Row>
+          <Row gutter={12}>
             <Col span={12}>
               <Form.Item
                 {...formItemProps}
@@ -107,18 +106,70 @@ const TaskModal: FC<TaskModalProps> = (props): JSX.Element => {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Component" required={true} name="component">
-                <Select placeholder="Select your project component" />
+              <Form.Item
+                {...formItemProps}
+                label="Component"
+                required={true}
+                name="component">
+                <Select placeholder="Select your project component, type to search" />
               </Form.Item>
             </Col>
           </Row>
+          <Row gutter={12}>
+            <Col span={12}>
+              <Form.Item
+                {...formItemProps}
+                label="Phase"
+                required={true}
+                name="phase">
+                <Select placeholder="Select your project phase" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                {...formItemProps}
+                label="Reporter"
+                required={true}
+                name="reporter">
+                <Select placeholder="Select your reporter" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={12}>
+            <Col span={12}>
+              <Form.Item
+                {...formItemProps}
+                label="Type of Work"
+                required={true}
+                name="typeOfWork">
+                <Select
+                  placeholder="Select your project phase"
+                  options={Object.values(TypeOfWork).map((type) => ({
+                    value: type,
+                    label: (
+                      <div className="d-flex align-items-center">
+                        {isGam(user) ? <div>🐸 </div> : null}
+                        <span className="mx-2">{type}</span>
+                      </div>
+                    ),
+                  }))}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <div />
+            </Col>
+          </Row>
+          <Form.Item label="Contents" required={true} name="reporter">
+            <Input.TextArea rows={10} placeholder="Select your reporter" />
+          </Form.Item>
         </Form>
       </Spin>
-    </ModalTemplate>
+    </Modal>
   );
 };
 
-export interface TaskModalProps extends ModalTemplateProps {
+export interface TaskModalProps {
   //
 }
 
