@@ -18,7 +18,7 @@ class LicenseService extends Service {
     });
   }
 
-  public async getLicenseStatus(
+  public async checkForLicenseStatus(
     username: string,
     users: Users,
   ): Promise<LicenseStatus> {
@@ -28,11 +28,10 @@ class LicenseService extends Service {
       return LicenseStatus.UNLICENSED;
     }
 
-    const expiredTimeString = users[lowercaseUsername];
-    const expiredTime = new Date(expiredTimeString);
-    const now = await firstValueFrom(jiraRepository.getDate());
+    const expiredDate: Date = new Date(users[lowercaseUsername]);
+    const now: Date = await firstValueFrom(jiraRepository.getDate());
 
-    if (now.getTime() >= expiredTime.getTime()) {
+    if (now.getTime() >= expiredDate.getTime()) {
       return LicenseStatus.EXPIRED;
     }
 

@@ -1,22 +1,25 @@
 import React from 'react';
 import type {Root} from 'react-dom/client';
 import {createRoot} from 'react-dom/client';
-import {Provider} from 'react-redux';
+import {Provider, useSelector} from 'react-redux';
 import {useUser} from './services/use-user';
-import {store} from './store';
-import classNames from 'classnames';
+import type {GlobalState} from './store';
+import {persistor, store} from './store';
 import * as Sentry from '@sentry/react';
-import {Modal, ModalBody} from 'reactstrap';
 import {LicenseStatus} from 'src/types/license-status';
-import {Spin} from 'antd';
-import {NoLicenseComponent} from 'src/components/NoLicenseComponent';
+import NoLicenseComponent from 'src/components/NoLicenseComponent';
+import {SENTRY_DSN} from 'src/config/secrets';
+import {PersistGate} from 'redux-persist/integration/react';
+import TaskModal from 'src/modules/TaskModal';
+import TaskButton from 'src/components/TaskButton';
 
 Sentry.init({
-  dsn: 'https://ca838cedd3444e29a2d0678c48fada2a@sentry.truesight.asia/8',
+  dsn: SENTRY_DSN,
 });
 
 const JiraApp: React.FC = () => {
-  const [user, isLoading, licenseStatus] = useUser();
+  const [user, , licenseStatus] = useUser();
+  const isVisible = useSelector((state: GlobalState) => state.jira.isVisible);
 
   React.useEffect(() => {
     if (user) {
@@ -24,46 +27,25 @@ const JiraApp: React.FC = () => {
     }
   }, [user]);
 
-  if (isLoading) {
-    return (
-      <Modal isOpen={isLoading}>
-        <ModalBody className="d-flex justify-content-center align-items-center">
-          <Spin tip="Checking for your license" spinning={isLoading} />
-        </ModalBody>
-      </Modal>
-    );
+  if (licenseStatus !== LicenseStatus.VALID) {
+    return <NoLicenseComponent />;
   }
 
-  if (licenseStatus === LicenseStatus.VALID) {
-    // TODO: valid license
-    return <></>;
-  }
-
-  return <NoLicenseComponent />;
+  // TODO: valid license
+  return <TaskModal isOpen={isVisible} />;
 };
 
 // Inject "Tasks" button
 const ul: Element = document.querySelectorAll('.aui-nav.__skate')[0];
 const li: HTMLLIElement = document.createElement('li');
-const liRoot: Root = createRoot(li);
+ul.appendChild(li);
 
+const liRoot: Root = createRoot(li);
 liRoot.render(
   <Provider store={store}>
-    <a
-      role="button"
-      href="#"
-      onClick={() => {
-        // TODO: toggle modal
-      }}
-      id="fis_jira_automation_create_tasks_button"
-      className={classNames(
-        'aui-button aui-button-primary aui-style aui-button-primary',
-      )}
-      title="Create tasks using extension">
-      <span>Tasks</span>
-    </a>
-    <JiraApp />
+    <PersistGate loading={null} persistor={persistor}>
+      <TaskButton />
+      <JiraApp />
+    </PersistGate>
   </Provider>,
 );
-
-ul.appendChild(li);

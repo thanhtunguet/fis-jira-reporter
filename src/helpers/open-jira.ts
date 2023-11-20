@@ -5,6 +5,6 @@ export function openJira() {
     // Get the current tab
     const currentTab = tabs[0];
     // Update the URL of the current tab
-    await chrome.tabs.update(currentTab.id, {url: JIRA_HOST});
+    await chrome.tabs.update(currentTab.id!, {url: JIRA_HOST});
   });
 }

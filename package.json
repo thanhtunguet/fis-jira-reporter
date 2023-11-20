@@ -3,7 +3,7 @@
   "version": "1.4.6",
   "description": "Công cụ khai Timesheet cho nhân viên FPT - FIS, phát triển bởi Phạm Thanh Tùng & Lê Anh Dũng",
   "scripts": {
-    "watch": "rm -rf dist && NODE_ENV=development parcel watch manifest.json",
+    "watch": "rm -rf dist .parcel-cache && NODE_ENV=development parcel watch manifest.json",
     "build": "rm -rf dist .parcel-cache && NODE_ENV=production parcel build manifest.json --no-source-maps",
     "zip": "zip -r extension.zip dist"
   },

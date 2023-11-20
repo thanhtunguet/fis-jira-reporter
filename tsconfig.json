@@ -2,6 +2,7 @@
   "compilerOptions": {
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
     "baseUrl": ".",
     "emitDecoratorMetadata": true,
     "esModuleInterop": false,
@@ -16,7 +17,7 @@
     ],
     "module": "ESNext",
     "moduleResolution": "node",
-    "outDir": "extension/build",
+    "outDir": "dist/build",
     "paths": {
       "src/*": [
         "./src/*"
@@ -25,28 +26,27 @@
         "./package.json"
       ],
       "manifest.json": [
-        "./dist/manifest.json"
+        "./manifest.json"
       ],
-      "readme.mdx": [
+      "README.md": [
         "./README.md"
       ]
     },
     "resolveJsonModule": true,
-    "strict": false,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "strictBindCallApply": true,
+    "strictNullChecks": true,
     "target": "ES5",
     "typeRoots": [
       "./node_modules/@types/"
     ]
   },
-  "exclude": [
-    ".git",
-    ".idea",
-    "extension",
-    "node_modules",
-    "README.md"
-  ],
   "include": [
+    "manifest.json",
     "src/",
-    "dist/manifest.json"
+    "package.json"
   ]
 }

@@ -1,7 +1,8 @@
+import type {FC} from 'react';
 import React from 'react';
 import {Modal, ModalBody, ModalHeader} from 'reactstrap';
 
-export function NoLicenseComponent() {
+const NoLicenseComponent: FC = (): JSX.Element => {
   return (
     <Modal isOpen={true}>
       <ModalHeader>Invalid License</ModalHeader>
@@ -25,4 +26,6 @@ export function NoLicenseComponent() {
       </ModalBody>
     </Modal>
   );
-}
+};
+
+export default NoLicenseComponent;

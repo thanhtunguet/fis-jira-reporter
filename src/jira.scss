@@ -1,12 +1,12 @@
 @import '../node_modules/bootstrap/scss/bootstrap';
 
 .aui-button.aui-button-primary {
-  background-color: #f37022!important;
+  background-color: #f37022 !important;
 }
 
 .aui-button.aui-button-danger {
   &:hover {
-    background-color: darkred!important;
+    background-color: darkred !important;
   }
 }
 
@@ -20,4 +20,19 @@
 .jira-primary-spinner {
   width: 1rem;
   height: 1rem;
+}
+
+.hide {
+  visibility: hidden;
+  display: none;
+}
+
+.global-spinner-content {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }

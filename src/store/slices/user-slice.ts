@@ -6,7 +6,7 @@ import {LicenseStatus} from 'src/types/license-status';
 
 export class UserState extends Model {
   @ObjectField(User)
-  user?: User;
+  user?: User | null;
 
   @Field(Boolean)
   isLoading?: boolean;

@@ -7,12 +7,11 @@ Repository.requestInterceptor = async function (
 ): Promise<AxiosRequestConfig> {
   // Only load cookies if outside of Jira site
   if (chrome.cookies) {
-    const cookie = await chrome.cookies.get({
+    const cookie: chrome.cookies.Cookie | null = await chrome.cookies.get({
       url: JIRA_HOST,
       name: 'JSESSIONID',
     });
-    config.headers.cookie = `JSESSIONID=${cookie.value}`;
+    config.headers.cookie = `JSESSIONID=${cookie!.value}`;
   }
-
   return config;
 };

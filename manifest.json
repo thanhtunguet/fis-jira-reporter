@@ -10,6 +10,9 @@
     "64": "assets/icons/icon-64x64.png",
     "128": "assets/icons/icon-128x128.png"
   },
+  "permissions": [
+    "storage"
+  ],
   "host_permissions": [
     "https://jira.fis.com.vn/*"
   ],
@@ -36,8 +39,8 @@
     {
       "resources": [
         "src/jira.fis.com.vn.tsx",
-        "assets/*.xlsx",
-        "assets/*.png"
+        "assets/**/*.xlsx",
+        "assets/**/*.png"
       ],
       "matches": [
         "https://jira.fis.com.vn/*"

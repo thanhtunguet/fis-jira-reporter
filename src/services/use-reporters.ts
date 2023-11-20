@@ -5,17 +5,29 @@ import {jiraRepository} from 'src/repositories/jira-repository';
 
 export function useReporters(): [
   User[], //
-  (username: string) => void,
+  (username: string) => Promise<void>,
+  boolean,
 ] {
   const [reporters, setReporters] = React.useState<User[]>([]);
+  const [isSearchingReporter, setIsSearchingReporter] =
+    React.useState<boolean>(false);
 
-  const handleSearchReporter = React.useCallback(async (username: string) => {
-    await firstValueFrom(jiraRepository.searchUser(username))
-      //
-      .then(({users = []}) => {
-        setReporters(users);
-      });
-  }, []);
+  const handleSearchReporter = React.useCallback(
+    (username: string): Promise<void> => {
+      setIsSearchingReporter(true);
+      return (
+        firstValueFrom(jiraRepository.searchUser(username))
+          //
+          .then(({users = []}) => {
+            setReporters(users);
+          })
+          .finally(() => {
+            setIsSearchingReporter(false);
+          })
+      );
+    },
+    [],
+  );
 
-  return [reporters, handleSearchReporter];
+  return [reporters, handleSearchReporter, isSearchingReporter];
 }

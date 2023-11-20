@@ -1,7 +1,8 @@
 import Button from 'antd/es/button';
 import {DownloadOutlined} from '@ant-design/icons';
+import type {FC, ReactNode} from 'react';
 
-export const DownloadTemplateButton = () => {
+const DownloadTemplateButton: FC = (): JSX.Element => {
   return (
     <Button
       className="my-2 d-inline-flex justify-content-center align-items-center"
@@ -14,3 +15,5 @@ export const DownloadTemplateButton = () => {
     </Button>
   );
 };
+
+export default DownloadTemplateButton;

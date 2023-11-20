@@ -7,44 +7,68 @@ import {
   ModalHeader,
   Spinner,
 } from 'reactstrap';
-import type {PropsWithChildren} from 'react';
+import type {FC, PropsWithChildren} from 'react';
 import React from 'react';
 
-export function ModalTemplate(props: PropsWithChildren<ModalTemplateProps>) {
-  const {children, loading, onOk, onCancel, ...restProps} = props;
+const ModalTemplate: FC<PropsWithChildren<ModalTemplateProps>> = (
+  props: PropsWithChildren<ModalTemplateProps>,
+): JSX.Element => {
+  const {
+    children,
+    isLoading,
+    onOk,
+    okText,
+    onCancel,
+    cancelText,
+    title,
+    ...restProps //
+  } = props;
 
   return (
     <Modal {...restProps} size="xl" unmountOnClose={true} fullscreen={true}>
-      <ModalHeader>Create tasks</ModalHeader>
+      <ModalHeader>{title}</ModalHeader>
       <ModalBody>{children}</ModalBody>
       <ModalFooter>
         <Button
           onClick={onOk}
           className="aui-button aui-button-primary aui-style inline-flex align-items-center">
-          {loading && (
+          {isLoading && (
             <Spinner
               className="jira-primary-spinner"
               type="border"
               color="light"
             />
           )}
-          <span className="mx-2">OK</span>
+          <span className="mx-2">{okText}</span>
         </Button>
         <Button
           color="secondary"
           onClick={onCancel}
           className="aui-button aui-button-secondary aui-style">
-          Cancel
+          {cancelText}
         </Button>
       </ModalFooter>
     </Modal>
   );
-}
+};
 
 export interface ModalTemplateProps extends ModalProps {
+  okText?: string;
+
   onOk?(): void | Promise<void>;
+
+  cancelText?: string;
 
   onCancel?(): void | Promise<void>;
 
-  loading?: boolean;
+  isLoading?: boolean;
+
+  title: string;
 }
+
+ModalTemplate.defaultProps = {
+  okText: 'OK',
+  cancelText: 'Cancel',
+};
+
+export default ModalTemplate;
