@@ -1,4 +1,5 @@
 import type {SimpleTask} from 'src/types/SimpleTask';
+import type {TypeOfWork} from 'src/models/index';
 
 export class JiraForm {
   project: string;
@@ -7,7 +8,9 @@ export class JiraForm {
 
   phase: number;
 
-  typeOfWork: string;
+  typeOfWork: TypeOfWork;
 
   tasks: SimpleTask[];
+
+  reporter: string;
 }

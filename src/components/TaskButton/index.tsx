@@ -22,7 +22,7 @@ export function TaskButton(): ReactElement {
       aria-disabled={isLoading}
       id="fis_jira_automation_create_tasks_button"
       className={classNames(
-        'aui-button aui-button-primary aui-style aui-button-primary',
+        'aui-button aui-button-primary aui-style aui-button-primary mx-2',
       )}
       title="Create tasks using extension">
       <span>{isLoading ? 'Checking for license' : 'Tasks'}</span>

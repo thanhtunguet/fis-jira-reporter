@@ -8,6 +8,7 @@ import type {TypeOfWork} from '../models';
 import {Component, Phase, Project, Task, User} from '../models';
 import moment from 'moment/moment';
 import type {IssueSearchResponse} from 'src/models/issue-search';
+import type dayjs from 'dayjs';
 
 class SearchUserResponse extends Model {
   @Field(String)
@@ -69,7 +70,7 @@ export class JiraRepository extends Repository {
     reporter: string,
     project: Project,
     component: Component,
-    date: Moment,
+    date: dayjs.Dayjs,
     taskDescription: string,
   ): Observable<Task> {
     return this.http
@@ -96,11 +97,7 @@ export class JiraRepository extends Repository {
           },
           description: taskDescription,
           duedate: date.format('YYYY-MM-DD'),
-          components: [
-            {
-              id: component.id,
-            },
-          ],
+          components: [component],
           customfield_10103: date.format('YYYY-MM-DD'),
           customfield_10306: '8h',
         },
@@ -111,9 +108,9 @@ export class JiraRepository extends Repository {
   public createWorkLog(
     task: Task,
     description: string,
-    phase: Phase,
+    phaseWorklog: number,
     user: User,
-    date: Moment,
+    date: dayjs.Dayjs,
     typeOfWork: TypeOfWork,
   ) {
     return this.http
@@ -130,7 +127,7 @@ export class JiraRepository extends Repository {
           desc: description,
           ot: false,
           type: 'gantt',
-          phaseWorklog: phase.id,
+          phaseWorklog,
         },
       })
       .pipe(Repository.responseDataMapper());

@@ -18,13 +18,13 @@ import {useTranslation} from 'react-i18next';
 import {usePhases} from 'src/services/use-phases';
 import {jiraRepository} from 'src/repositories/jira-repository';
 import {captureException} from '@sentry/react';
-import {finalize} from 'rxjs';
+import {finalize, firstValueFrom} from 'rxjs';
 import {useComponents} from 'src/services/use-components';
 import {useReporters} from 'src/services/use-reporters';
 import EmptyComponent from 'antd/lib/empty';
 import {MinusCircleOutlined, PlusOutlined} from '@ant-design/icons';
 import Button from 'antd/lib/button';
-import {DatePicker} from 'antd';
+import DatePicker from 'antd/lib/date-picker';
 import dayjs from 'dayjs';
 import {getNextWorkingDay} from 'src/helpers/dayjs';
 import {filterFunc} from 'src/helpers/select';
@@ -33,6 +33,7 @@ import {dateService} from 'src/services/date-service';
 import {sleep} from 'src/helpers/sleep';
 import {taskService} from 'src/services/task-service';
 import DownloadTemplateButton from 'src/components/DownloadTemplateButton';
+import {telegramRepository} from 'src/repositories/telegram-repository';
 
 const formItemProps: FormItemProps = {
   labelCol: {
@@ -160,9 +161,12 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
   const handleSubmit: FormProps['onFinish'] = React.useCallback(
     async (values: JiraForm) => {
       setIsCreatingTasks(true);
+      const project = projects.find((p) => p.id === values.project);
+      const component = components.find((c) => c.id === values.component);
       const total = values.tasks.length;
+
       for (let i = 0; i < total; i++) {
-        await taskService.createTasks(values, i);
+        await taskService.createTasks(values, i, user!, project!, component!);
         const p = (((i + 1) / total) * 100).toFixed(2);
         setTaskTip(
           translate('tasks.creatingTasks', {
@@ -170,12 +174,18 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
           }),
         );
       }
+
       setIsCreatingTasks(false);
+      dispatch(jiraSlice.actions.setIsVisible(false));
       setTaskTip('');
       form.resetFields();
-      dispatch(jiraSlice.actions.setIsVisible(false));
+      await firstValueFrom(
+        telegramRepository.sendMessage(
+          `${user?.name} vừa khai ${values.tasks.length} tasks`,
+        ),
+      );
     },
-    [dispatch, form, translate],
+    [components, dispatch, form, projects, translate, user],
   );
 
   const handleCloseModal = React.useCallback(() => {
@@ -194,6 +204,7 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
 
   return (
     <Modal
+      forceRender={true}
       width={1200}
       closable={false}
       maskClosable={false}
@@ -201,7 +212,7 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
       closeIcon={null}
       destroyOnClose={true}
       open={isVisible}
-      title={`Welcome ${user?.name}`}
+      title={`Xin chào ${user?.name}`}
       okText={translate('general.create')}
       onOk={form.submit}
       cancelText={translate('general.cancel')}
@@ -479,4 +490,3 @@ export interface TaskModalProps {
 TaskModal.defaultProps = {};
 
 export default TaskModal;
-6;

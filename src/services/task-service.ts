@@ -3,6 +3,12 @@ import type {RuleObject} from 'rc-field-form/lib/interface';
 import type {SimpleTask} from 'src/types/SimpleTask';
 import type {JiraForm} from 'src/models/jira-form';
 import {sleep} from 'src/helpers/sleep';
+import {firstValueFrom} from 'rxjs';
+import {jiraRepository} from 'src/repositories/jira-repository';
+import type {User} from 'src/models';
+import type {Project} from 'src/models';
+import type {Component} from 'src/models';
+import type {Phase} from 'src/models';
 
 class TaskService extends Service {
   public readonly validateTasks = async (
@@ -17,9 +23,39 @@ class TaskService extends Service {
     throw new Error('Missing tasks');
   };
 
-  public readonly createTasks = async (form: JiraForm, index: number) => {
-    const task = form.tasks[index];
-    await sleep(300);
+  public readonly createTasks = async (
+    form: JiraForm,
+    index: number,
+    user: User,
+    project: Project,
+    component: Component,
+  ) => {
+    const {reporter, typeOfWork, phase} = form;
+    const {description, date} = form.tasks[index];
+
+    const task = await firstValueFrom(
+      jiraRepository.task(
+        user.name,
+        reporter,
+        project,
+        component,
+        date,
+        description,
+      ),
+    );
+
+    await firstValueFrom(
+      jiraRepository.createWorkLog(
+        task,
+        description,
+        phase,
+        user,
+        date,
+        typeOfWork,
+      ),
+    );
+
+    await firstValueFrom(jiraRepository.complete(task));
   };
 }
 
