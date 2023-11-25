@@ -2,13 +2,9 @@ import {Service} from 'react3l';
 import type {RuleObject} from 'rc-field-form/lib/interface';
 import type {SimpleTask} from 'src/types/SimpleTask';
 import type {JiraForm} from 'src/models/jira-form';
-import {sleep} from 'src/helpers/sleep';
 import {firstValueFrom} from 'rxjs';
 import {jiraRepository} from 'src/repositories/jira-repository';
-import type {User} from 'src/models';
-import type {Project} from 'src/models';
-import type {Component} from 'src/models';
-import type {Phase} from 'src/models';
+import type {Component, Project, User} from 'src/models';
 
 class TaskService extends Service {
   public readonly validateTasks = async (

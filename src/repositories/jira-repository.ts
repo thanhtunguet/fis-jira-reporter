@@ -1,4 +1,3 @@
-import type {Moment} from 'moment';
 import {Field, Model, ObjectList, Repository} from 'react3l';
 import type {Observable} from 'rxjs';
 import {map} from 'rxjs';
