@@ -1,9 +1,9 @@
 {
   "tasks.creatingTasks": "Đang tạo tasks: {{p}}%",
-  "tasks.title": "Tasks (Bấm Ctrl + V để paste từ Excel)",
   "tasks.date": "Ngày",
   "tasks.invalidDate": "Ngày không hợp lệ",
   "tasks.description": "Mô tả",
   "tasks.missingDescription": "Bạn chưa nhập mô tả công việc",
+  "tasks.pasteToImport": "Copy sheet Excel và paste vào đây để import tasks",
   "tasks.addTask": "Thêm task"
 }

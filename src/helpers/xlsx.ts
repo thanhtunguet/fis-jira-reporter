@@ -14,12 +14,15 @@ export function parseExcelData(copiedText: string): ExcelTask[] {
   return xlsx.utils.sheet_to_json(sheet);
 }
 
-export function excelDateToJSDate(excelDate: number) {
-  const excelBaseDate = new Date(1899, 11, 30); // Excel's base date is December 30, 1899
-  const millisecondsPerDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+export function excelDateToJSDate(excelDate: number | string) {
+  if (typeof excelDate === 'number') {
+    const excelBaseDate = new Date(1899, 11, 30); // Excel's base date is December 30, 1899
+    const millisecondsPerDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
 
-  // Convert Excel date to JavaScript date
-  return dayjs(
-    new Date(excelBaseDate.getTime() + excelDate * millisecondsPerDay),
-  );
+    // Convert Excel date to JavaScript date
+    return dayjs(
+      new Date(excelBaseDate.getTime() + excelDate * millisecondsPerDay),
+    );
+  }
+  return dayjs(excelDate);
 }

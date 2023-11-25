@@ -8,8 +8,6 @@ import Form from 'antd/lib/form';
 import type {JiraForm} from 'src/models/jira-form';
 import Select from 'antd/lib/select';
 import {useProjects} from 'src/services/use-projects';
-import {isGam} from 'src/helpers/gam';
-import GamEch from 'src/components/GamEch';
 import {Col, Row} from 'antd/lib/grid';
 import Spin from 'antd/lib/spin';
 import Modal from 'antd/lib/modal';
@@ -238,16 +236,12 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
                     searchValue: project.key,
                     label: (
                       <div className="d-flex align-items-center">
-                        {isGam(user) ? (
-                          <GamEch />
-                        ) : (
-                          <img
-                            alt={project.name}
-                            src={project.avatarUrls['24x24']}
-                            width={16}
-                            height={16}
-                          />
-                        )}
+                        <img
+                          alt={project.name}
+                          src={project.avatarUrls['24x24']}
+                          width={16}
+                          height={16}
+                        />
                         <Tooltip title={project.name}>
                           <span className="label">{project.key}</span>
                         </Tooltip>
@@ -378,7 +372,6 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
                     value: type,
                     label: (
                       <div className="d-flex align-items-center">
-                        {isGam(user) ? <GamEch /> : null}
                         <span className="mx-2">{type}</span>
                       </div>
                     ),
@@ -403,25 +396,23 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
                 <div className="task-list" ref={divRef}>
                   {fields.map(({key, name, ...restField}) => (
                     <Row key={key} gutter={12}>
-                      <Col span={8}>
+                      <Col span={12}>
                         <Form.Item
                           {...restField}
                           {...formItemProps}
                           label={translate('tasks.date')}
                           name={[name, 'date']}
+                          required={true}
                           rules={[
                             {
                               validator: dateService.validateCurrentDate,
                               message: translate('tasks.invalidDate'),
                             },
                           ]}>
-                          <DatePicker
-                            placeholder={translate('tasks.date')}
-                            className="w-100"
-                          />
+                          <DatePicker placeholder={translate('tasks.date')} />
                         </Form.Item>
                       </Col>
-                      <Col span={15}>
+                      <Col span={11}>
                         <Form.Item
                           {...restField}
                           {...formItemProps}
@@ -443,7 +434,7 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
                   ))}
                 </div>
                 <div>
-                  <span>Paste the whole sheet here to import tasks</span>
+                  <span>{translate('tasks.pasteToImport')}</span>
                 </div>
                 <div className="d-flex justify-content-center align-items-center">
                   <Button
@@ -488,3 +479,4 @@ export interface TaskModalProps {
 TaskModal.defaultProps = {};
 
 export default TaskModal;
+6;
