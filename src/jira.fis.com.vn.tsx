@@ -11,6 +11,8 @@ import {SENTRY_DSN} from 'src/config/secrets';
 import {PersistGate} from 'redux-persist/integration/react';
 import TaskModal from 'src/modules/TaskModal';
 import TaskButton from 'src/components/TaskButton';
+import {localization} from 'react3l';
+import {AppLanguage} from 'src/types/AppLanguage';
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -43,8 +45,30 @@ liRoot.render(
   </Provider>,
 );
 
-// Inject "Tasks" button
-const ul: Element | null = document.querySelector('ul.aui-nav.__skate');
-if (ul !== null) {
-  ul.appendChild(li);
-}
+localization
+  .initialize({
+    lng: AppLanguage.VIETNAMESE,
+    fallbackLng: AppLanguage.VIETNAMESE,
+    ns: '',
+    defaultNS: '',
+    resources: {
+      translations: {},
+    },
+    interpolation: {
+      prefix: '{{',
+      suffix: '}}',
+    },
+  })
+  .then(async () => {
+    localization.addLanguage(
+      AppLanguage.VIETNAMESE,
+      require('./locales/vi.json'),
+    );
+    localization.addLanguage(AppLanguage.ENGLISH, require('./locales/en.json'));
+    await localization.changeLanguage(AppLanguage.VIETNAMESE);
+    // Inject "Tasks" button
+    const ul: Element | null = document.querySelector('ul.aui-nav.__skate');
+    if (ul !== null) {
+      ul.appendChild(li);
+    }
+  });

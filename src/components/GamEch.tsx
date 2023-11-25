@@ -1,5 +1,9 @@
+import {useTranslation} from 'react-i18next';
+
 function GamEch() {
-  return <span> 🐸 </span>;
+  const [translate] = useTranslation();
+
+  return <span> {translate('all.gamEch')} </span>;
 }
 
 export default GamEch;

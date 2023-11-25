@@ -7,10 +7,16 @@ export function useReporters(): [
   User[], //
   (username: string) => Promise<void>,
   boolean,
+  string | undefined,
+  (username: string) => Promise<void>,
 ] {
   const [reporters, setReporters] = React.useState<User[]>([]);
   const [isSearchingReporter, setIsSearchingReporter] =
     React.useState<boolean>(false);
+
+  const [selectedReporter, setSelectedReporter] = React.useState<
+    string | undefined
+  >(undefined);
 
   const handleSearchReporter = React.useCallback(
     (username: string): Promise<void> => {
@@ -18,7 +24,12 @@ export function useReporters(): [
       return (
         firstValueFrom(jiraRepository.searchUser(username))
           //
-          .then(({users = []}) => {
+          .then(({users, total}) => {
+            console.log(users);
+            if (total === 0) {
+              setReporters([]);
+              return;
+            }
             setReporters(users);
           })
           .finally(() => {
@@ -29,5 +40,15 @@ export function useReporters(): [
     [],
   );
 
-  return [reporters, handleSearchReporter, isSearchingReporter];
+  const handleSelectReporter = React.useCallback(async (username: string) => {
+    setSelectedReporter(username);
+  }, []);
+
+  return [
+    reporters,
+    handleSearchReporter,
+    isSearchingReporter,
+    selectedReporter,
+    handleSelectReporter,
+  ];
 }
