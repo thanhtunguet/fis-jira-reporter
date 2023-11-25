@@ -1,4 +1,5 @@
 {
   "user.reporter": "Reporter",
+  "user.missingReporter": "Bạn chưa chọn reporter",
   "user.reporterSearchPlaceholder": "Tìm kiếm theo username"
 }

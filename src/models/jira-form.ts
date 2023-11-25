@@ -1,3 +1,5 @@
+import type {SimpleTask} from 'src/types/SimpleTask';
+
 export class JiraForm {
   project: string;
 
@@ -6,4 +8,6 @@ export class JiraForm {
   phase: number;
 
   typeOfWork: string;
+
+  tasks: SimpleTask[];
 }

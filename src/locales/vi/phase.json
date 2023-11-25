@@ -1,4 +1,5 @@
 {
   "phase.title": "Phase",
+  "phase.missingPhase": "Bạn chưa chọn phase",
   "phase.searchPlaceholder": "Nhập để tìm kiếm"
 }

@@ -3,7 +3,7 @@ import {Service} from 'react3l';
 import {firstValueFrom} from 'rxjs';
 import {database} from 'src/config/database';
 import {jiraRepository} from 'src/repositories/jira-repository';
-import {LicenseStatus} from 'src/types/license-status';
+import {LicenseStatus} from 'src/types/LicenseStatus';
 
 export type Users = Record<string, string>;
 

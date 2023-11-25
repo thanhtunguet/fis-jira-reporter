@@ -1,4 +1,6 @@
 {
+  "project.closedProject": "Dự án không hoạt động trong năm nay",
   "project.title": "Dự án",
+  "project.missingProject": "Bạn chưa chọn dự án",
   "project.searchPlaceholder": "Nhập để tìm kiếm"
 }

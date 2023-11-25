@@ -5,7 +5,7 @@ import {Provider} from 'react-redux';
 import {useUser} from './services/use-user';
 import {persistor, store} from './store';
 import * as Sentry from '@sentry/react';
-import {LicenseStatus} from 'src/types/license-status';
+import {LicenseStatus} from 'src/types/LicenseStatus';
 import NoLicenseComponent from 'src/components/NoLicenseComponent';
 import {SENTRY_DSN} from 'src/config/secrets';
 import {PersistGate} from 'redux-persist/integration/react';

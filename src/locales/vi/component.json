@@ -1,4 +1,5 @@
 {
   "component.title": "Component",
+  "component.missingComponent": "Bạn chưa chọn component",
   "component.searchPlaceholder": "Nhập để tìm kiếm"
 }

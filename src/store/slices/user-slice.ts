@@ -2,7 +2,7 @@ import type {PayloadAction} from '@reduxjs/toolkit';
 import {createSlice} from '@reduxjs/toolkit';
 import {Field, Model, ObjectField} from 'react3l';
 import {User} from 'src/models';
-import {LicenseStatus} from 'src/types/license-status';
+import {LicenseStatus} from 'src/types/LicenseStatus';
 
 export class UserState extends Model {
   @ObjectField(User)

@@ -1,3 +1,9 @@
 {
-  "tasks.addYourTaskHere": ""
+  "tasks.creatingTasks": "",
+  "tasks.title": "",
+  "tasks.date": "",
+  "tasks.invalidDate": "",
+  "tasks.description": "",
+  "tasks.missingDescription": "",
+  "tasks.addTask": ""
 }

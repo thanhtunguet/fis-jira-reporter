@@ -5,7 +5,7 @@ import type {User} from 'src/models';
 import {jiraRepository} from 'src/repositories/jira-repository';
 import {licenseService} from 'src/services/license-service';
 import {userSlice} from 'src/store/slices/user-slice';
-import type {LicenseStatus} from 'src/types/license-status';
+import type {LicenseStatus} from 'src/types/LicenseStatus';
 import * as Sentry from '@sentry/react';
 import type {GlobalState} from 'src/store';
 
