@@ -4,6 +4,6 @@
   "tasks.invalidDate": "Ngày không hợp lệ",
   "tasks.description": "Mô tả",
   "tasks.missingDescription": "Bạn chưa nhập mô tả công việc",
-  "tasks.pasteToImport": "Copy sheet Excel và paste vào đây để import tasks",
+  "tasks.pasteToImport": "Paste từ Excel",
   "tasks.addTask": "Thêm task"
 }

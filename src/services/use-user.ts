@@ -33,7 +33,9 @@ export function useUser(): [
 
     try {
       const currentUser = await firstValueFrom(jiraRepository.authSession());
+
       dispatch(setUser(currentUser));
+
       const users = await licenseService.getUsers();
       const status = await licenseService.checkForLicenseStatus(
         currentUser.name,

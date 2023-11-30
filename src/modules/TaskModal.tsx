@@ -1,4 +1,4 @@
-import type {FC} from 'react';
+import type {FC, MouseEvent} from 'react';
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import type {GlobalState} from 'src/store';
@@ -22,7 +22,11 @@ import {finalize, firstValueFrom} from 'rxjs';
 import {useComponents} from 'src/services/use-components';
 import {useReporters} from 'src/services/use-reporters';
 import EmptyComponent from 'antd/lib/empty';
-import {MinusCircleOutlined, PlusOutlined} from '@ant-design/icons';
+import {
+  MinusCircleOutlined,
+  PlusOutlined,
+  CopyOutlined,
+} from '@ant-design/icons';
 import Button from 'antd/lib/button';
 import DatePicker from 'antd/lib/date-picker';
 import dayjs from 'dayjs';
@@ -111,49 +115,34 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
     [form, translate],
   );
 
-  const handlePasteContent = React.useCallback(
-    (event: DocumentEventMap['paste']) => {
+  const handlePasteContent = React.useCallback(async () => {
+    try {
       // Handle the paste event here
-      const clipboardData =
-        event.clipboardData || (window as any).clipboardData;
+      const data = await navigator.clipboard.readText();
+      const tasks = parseExcelData(data).map((task) => {
+        const {date, ...others} = task;
+        return {
+          ...others,
+          date: excelDateToJSDate(date),
+        };
+      });
 
-      try {
-        const tasks = parseExcelData(clipboardData.getData('text')).map(
-          (task) => {
-            const {date, ...others} = task;
-            return {
-              ...others,
-              date: excelDateToJSDate(date),
-            };
-          },
-        );
-
-        form.setFields([
-          {
-            name: 'tasks',
-            value: tasks,
-          },
-        ]);
-      } catch (error) {
-        form.setFields([
-          {
-            name: 'tasks',
-            value: [],
-          },
-        ]);
-        captureException(error);
-      }
-    },
-    [form],
-  );
-
-  React.useEffect(() => {
-    document.addEventListener('paste', handlePasteContent);
-
-    return () => {
-      document.removeEventListener('paste', handlePasteContent);
-    };
-  }, [handlePasteContent]);
+      form.setFields([
+        {
+          name: 'tasks',
+          value: tasks,
+        },
+      ]);
+    } catch (error) {
+      form.setFields([
+        {
+          name: 'tasks',
+          value: [],
+        },
+      ]);
+      captureException(error);
+    }
+  }, [form]);
 
   const [isCreatingTasks, setIsCreatingTasks] = React.useState<boolean>(false);
   const [taskTip, setTaskTip] = React.useState<string>('');
@@ -435,7 +424,10 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
                               message: translate('tasks.missingDescription'),
                             },
                           ]}>
-                          <Input placeholder={translate('tasks.description')} />
+                          <Input.TextArea
+                            placeholder={translate('tasks.description')}
+                            rows={3}
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={1}>
@@ -444,12 +436,15 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
                     </Row>
                   ))}
                 </div>
-                <div>
-                  <span>{translate('tasks.pasteToImport')}</span>
-                </div>
                 <div className="d-flex justify-content-center align-items-center">
                   <Button
-                    className="flex-grow-1"
+                    type="primary"
+                    onClick={handlePasteContent}
+                    icon={<CopyOutlined />}>
+                    {translate('tasks.pasteToImport')}
+                  </Button>
+                  <Button
+                    className="flex-grow-1 mx-2"
                     type="dashed"
                     onClick={async () => {
                       const tasks = form.getFieldValue('tasks');
