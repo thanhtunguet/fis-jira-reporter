@@ -13,6 +13,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Retrieve Secrets and Print to .env
+        run: |
+          echo "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> .env
+          echo "TELE_BOT_TOKEN=${{ secrets.TELE_BOT_TOKEN }}" >> .env
+          echo "TELE_CHAT_ID=${{ secrets.TELE_CHAT_ID }}" >> .env
+        working-directory: ${{ github.workspace }}
+
       - name: Build project
         run: |
           yarn install
