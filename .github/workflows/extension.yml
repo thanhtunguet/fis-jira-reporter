@@ -28,6 +28,7 @@ jobs:
       - name: Build project
         run: |
           yarn install
+          yarn merge
           yarn build
           zip -r extension.zip dist
 
