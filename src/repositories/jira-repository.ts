@@ -9,7 +9,7 @@ import moment from 'moment/moment';
 import type {IssueSearchResponse} from 'src/models/issue-search';
 import type dayjs from 'dayjs';
 
-class SearchUserResponse extends Model {
+export class SearchUserResponse extends Model {
   @Field(String)
   public footer: string;
 

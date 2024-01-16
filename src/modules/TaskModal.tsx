@@ -38,6 +38,8 @@ import {sleep} from 'src/helpers/sleep';
 import {taskService} from 'src/services/task-service';
 import DownloadTemplateButton from 'src/components/DownloadTemplateButton';
 import {telegramRepository} from 'src/repositories/telegram-repository';
+import FormItem from 'antd/es/form/FormItem';
+import {handleTestUser} from 'src/services/test-users';
 
 const formItemProps: FormItemProps = {
   labelCol: {
@@ -472,6 +474,9 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
               </>
             )}
           </Form.List>
+          <FormItem>
+            <Button onClick={handleTestUser}>Test user</Button>
+          </FormItem>
         </Form>
       </Spin>
     </Modal>
