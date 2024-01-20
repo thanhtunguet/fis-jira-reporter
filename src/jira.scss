@@ -15,7 +15,21 @@ span.label {
   margin-right: 8px;
 }
 
-.mx-2 {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+.textarea-container {
+  .char-count {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.25rem;
+    font-size: small;
+  }
+
+  .char-count-1 {
+    right: 1.5rem;
+  }
+
+  .remove-item {
+    position: absolute;
+    right: 0.25rem;
+    top: 0.25rem;
+  }
 }

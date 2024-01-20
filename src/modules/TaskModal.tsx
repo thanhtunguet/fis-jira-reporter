@@ -1,45 +1,42 @@
-import type {FC, MouseEvent} from 'react';
-import React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import type {GlobalState} from 'src/store';
-import {jiraSlice} from 'src/store/slices/jira-slice';
-import type {FormItemProps, FormProps} from 'antd/lib/form';
-import Form from 'antd/lib/form';
-import type {JiraForm} from 'src/models/jira-form';
-import Select from 'antd/lib/select';
-import {useProjects} from 'src/services/use-projects';
-import {Col, Row} from 'antd/lib/grid';
-import Spin from 'antd/lib/spin';
-import Modal from 'antd/lib/modal';
-import Input from 'antd/lib/input';
-import {TypeOfWork} from 'src/models';
-import Tooltip from 'antd/lib/tooltip';
-import {useTranslation} from 'react-i18next';
-import {usePhases} from 'src/services/use-phases';
-import {jiraRepository} from 'src/repositories/jira-repository';
+import {CopyOutlined, PlusOutlined} from '@ant-design/icons';
 import {captureException} from '@sentry/react';
-import {finalize, firstValueFrom} from 'rxjs';
-import {useComponents} from 'src/services/use-components';
-import {useReporters} from 'src/services/use-reporters';
-import EmptyComponent from 'antd/lib/empty';
 import {
-  MinusCircleOutlined,
-  PlusOutlined,
-  CopyOutlined,
-} from '@ant-design/icons';
-import Button from 'antd/lib/button';
-import DatePicker from 'antd/lib/date-picker';
+  Button,
+  Col,
+  DatePicker,
+  Empty as EmptyComponent,
+  Form,
+  Modal,
+  Row,
+  Select,
+  Spin,
+  Tooltip,
+} from 'antd';
+import type {FormItemProps, FormProps} from 'antd/lib/form';
 import dayjs from 'dayjs';
+import type {FC} from 'react';
+import React from 'react';
+import {useTranslation} from 'react-i18next';
+import {useDispatch, useSelector} from 'react-redux';
+import {finalize, firstValueFrom} from 'rxjs';
+import DownloadTemplateButton from 'src/components/DownloadTemplateButton';
+import {TextAreaWithCharCount} from 'src/components/TextAreaWithCharCount';
 import {getNextWorkingDay} from 'src/helpers/dayjs';
 import {filterFunc} from 'src/helpers/select';
-import {excelDateToJSDate, parseExcelData} from 'src/helpers/xlsx';
-import {dateService} from 'src/services/date-service';
 import {sleep} from 'src/helpers/sleep';
-import {taskService} from 'src/services/task-service';
-import DownloadTemplateButton from 'src/components/DownloadTemplateButton';
+import {excelDateToJSDate, parseExcelData} from 'src/helpers/xlsx';
+import {TypeOfWork} from 'src/models';
+import type {JiraForm} from 'src/models/jira-form';
+import {jiraRepository} from 'src/repositories/jira-repository';
 import {telegramRepository} from 'src/repositories/telegram-repository';
-import FormItem from 'antd/es/form/FormItem';
-import {handleTestUser} from 'src/services/test-users';
+import {dateService} from 'src/services/date-service';
+import {taskService} from 'src/services/task-service';
+import {useComponents} from 'src/services/use-components';
+import {usePhases} from 'src/services/use-phases';
+import {useProjects} from 'src/services/use-projects';
+import {useReporters} from 'src/services/use-reporters';
+import type {GlobalState} from 'src/store';
+import {jiraSlice} from 'src/store/slices/jira-slice';
 
 const formItemProps: FormItemProps = {
   labelCol: {
@@ -151,32 +148,34 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
 
   const handleSubmit: FormProps['onFinish'] = React.useCallback(
     async (values: JiraForm) => {
-      setIsCreatingTasks(true);
-      const project = projects.find((p) => p.id === values.project);
-      const component = components.find((c) => c.id === values.component);
-      const total = values.tasks.length;
+      if (!isCreatingTasks) {
+        setIsCreatingTasks(true);
+        const project = projects.find((p) => p.id === values.project);
+        const component = components.find((c) => c.id === values.component);
+        const total = values.tasks.length;
 
-      for (let i = 0; i < total; i++) {
-        await taskService.createTasks(values, i, user!, project!, component!);
-        const p = (((i + 1) / total) * 100).toFixed(2);
-        setTaskTip(
-          translate('tasks.creatingTasks', {
-            p,
-          }),
+        for (let i = 0; i < total; i++) {
+          await taskService.createTasks(values, i, user!, project!, component!);
+          const p = (((i + 1) / total) * 100).toFixed(2);
+          setTaskTip(
+            translate('tasks.creatingTasks', {
+              p,
+            }),
+          );
+        }
+
+        setIsCreatingTasks(false);
+        dispatch(jiraSlice.actions.setIsVisible(false));
+        setTaskTip('');
+        form.resetFields();
+        await firstValueFrom(
+          telegramRepository.sendMessage(
+            `${user?.name} vừa khai ${values.tasks.length} tasks`,
+          ),
         );
       }
-
-      setIsCreatingTasks(false);
-      dispatch(jiraSlice.actions.setIsVisible(false));
-      setTaskTip('');
-      form.resetFields();
-      await firstValueFrom(
-        telegramRepository.sendMessage(
-          `${user?.name} vừa khai ${values.tasks.length} tasks`,
-        ),
-      );
     },
-    [components, dispatch, form, projects, translate, user],
+    [components, dispatch, form, projects, translate, user, isCreatingTasks],
   );
 
   const handleCloseModal = React.useCallback(() => {
@@ -195,6 +194,7 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
 
   return (
     <Modal
+      className="h-100"
       forceRender={true}
       width={1200}
       closable={false}
@@ -398,10 +398,9 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
                 <div className="task-list" ref={divRef}>
                   {fields.map(({key, name, ...restField}) => (
                     <Row key={key} gutter={12}>
-                      <Col span={12}>
+                      <Col span={8}>
                         <Form.Item
                           {...restField}
-                          {...formItemProps}
                           label={translate('tasks.date')}
                           name={[name, 'date']}
                           required={true}
@@ -411,13 +410,18 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
                               message: translate('tasks.invalidDate'),
                             },
                           ]}>
-                          <DatePicker placeholder={translate('tasks.date')} />
+                          <DatePicker
+                            className="w-100"
+                            placeholder={translate('tasks.date')}
+                          />
                         </Form.Item>
                       </Col>
-                      <Col span={11}>
+                      <Col
+                        span={16}
+                        className="d-flex justify-content-start align-items-center">
                         <Form.Item
                           {...restField}
-                          {...formItemProps}
+                          className="flex-grow-1"
                           label={translate('tasks.description')}
                           name={[name, 'description']}
                           rules={[
@@ -426,14 +430,11 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
                               message: translate('tasks.missingDescription'),
                             },
                           ]}>
-                          <Input.TextArea
+                          <TextAreaWithCharCount
                             placeholder={translate('tasks.description')}
-                            rows={3}
+                            onRemove={() => remove(name)}
                           />
                         </Form.Item>
-                      </Col>
-                      <Col span={1}>
-                        <MinusCircleOutlined onClick={() => remove(name)} />
                       </Col>
                     </Row>
                   ))}
@@ -474,9 +475,6 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
               </>
             )}
           </Form.List>
-          <FormItem>
-            <Button onClick={handleTestUser}>Test user</Button>
-          </FormItem>
         </Form>
       </Spin>
     </Modal>

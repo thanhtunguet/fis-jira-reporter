@@ -1,11 +1,9 @@
+import classNames from 'classnames';
 import type {ReactElement} from 'react';
-import React from 'react';
-import './TaskButton.scss';
+import {useSelector} from 'react-redux';
 import type {GlobalState} from 'src/store';
 import {store} from 'src/store';
-import classNames from 'classnames';
 import {jiraSlice} from 'src/store/slices/jira-slice';
-import {useSelector} from 'react-redux';
 
 const {setIsVisible} = jiraSlice.actions;
 
