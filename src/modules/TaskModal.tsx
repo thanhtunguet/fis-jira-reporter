@@ -12,7 +12,7 @@ import {
   Spin,
   Tooltip,
 } from 'antd';
-import type {FormItemProps, FormProps} from 'antd/lib/form';
+import type {FormProps} from 'antd/lib/form';
 import dayjs from 'dayjs';
 import type {FC} from 'react';
 import React from 'react';
@@ -37,15 +37,6 @@ import {useProjects} from 'src/services/use-projects';
 import {useReporters} from 'src/services/use-reporters';
 import type {GlobalState} from 'src/store';
 import {jiraSlice} from 'src/store/slices/jira-slice';
-
-const formItemProps: FormItemProps = {
-  labelCol: {
-    span: 8,
-  },
-  wrapperCol: {
-    span: 16,
-  },
-};
 
 const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
   const [translate] = useTranslation();
@@ -196,7 +187,7 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
     <Modal
       className="h-100"
       forceRender={true}
-      width={1200}
+      width={1080}
       closable={false}
       maskClosable={false}
       centered={true}
@@ -209,13 +200,13 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
       cancelText={translate('general.cancel')}
       onCancel={handleCloseModal}>
       <Spin
+        className="container"
         spinning={isLoadingProjects || isCheckingProject || isCreatingTasks}
         tip={isCreatingTasks ? taskTip : translate('general.loading')}>
-        <Form form={form} layout="horizontal" onFinish={handleSubmit}>
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Row gutter={12}>
-            <Col span={12}>
+            <Col span={24}>
               <Form.Item
-                {...formItemProps}
                 label={translate('project.title')}
                 required={true}
                 rules={[
@@ -253,9 +244,10 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+          </Row>
+          <Row gutter={12}>
+            <Col span={24}>
               <Form.Item
-                {...formItemProps}
                 label={translate('component.title')}
                 required={true}
                 rules={[
@@ -287,7 +279,6 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
           <Row gutter={12}>
             <Col span={12}>
               <Form.Item
-                {...formItemProps}
                 label={translate('phase.title')}
                 required={true}
                 rules={[
@@ -317,7 +308,6 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
             </Col>
             <Col span={12}>
               <Form.Item
-                {...formItemProps}
                 label={translate('user.reporter')}
                 required={true}
                 rules={[
@@ -357,7 +347,6 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
           <Row gutter={12}>
             <Col span={12}>
               <Form.Item
-                {...formItemProps}
                 label={translate('typeOfWork.title')}
                 required={true}
                 rules={[
