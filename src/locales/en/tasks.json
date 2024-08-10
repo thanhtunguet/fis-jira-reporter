@@ -1,9 +1,9 @@
 {
-  "tasks.creatingTasks": "",
-  "tasks.date": "",
-  "tasks.invalidDate": "",
-  "tasks.description": "",
-  "tasks.missingDescription": "",
-  "tasks.pasteToImport": "",
-  "tasks.addTask": ""
+  "tasks.creatingTasks": "Creating tasks",
+  "tasks.date": "Date",
+  "tasks.invalidDate": "Invalid date/time",
+  "tasks.description": "Description",
+  "tasks.missingDescription": "Description is required",
+  "tasks.pasteToImport": "Excel Paste",
+  "tasks.addTask": "Add task"
 }

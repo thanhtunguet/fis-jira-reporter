@@ -1,35 +1,29 @@
+import * as Sentry from '@sentry/react';
 import React from 'react';
 import type {Root} from 'react-dom/client';
 import {createRoot} from 'react-dom/client';
 import {Provider} from 'react-redux';
+import {localization} from 'react3l';
+import {PersistGate} from 'redux-persist/integration/react';
+import TaskButton from 'src/components/TaskButton';
+import {SENTRY_DSN} from 'src/config/secrets';
+import TaskModal from 'src/modules/TaskModal';
+import {AppLanguage} from 'src/types/AppLanguage';
 import {useUser} from './services/use-user';
 import {persistor, store} from './store';
-import * as Sentry from '@sentry/react';
-import {LicenseStatus} from 'src/types/LicenseStatus';
-import NoLicenseComponent from 'src/components/NoLicenseComponent';
-import {SENTRY_DSN} from 'src/config/secrets';
-import {PersistGate} from 'redux-persist/integration/react';
-import TaskModal from 'src/modules/TaskModal';
-import TaskButton from 'src/components/TaskButton';
-import {localization} from 'react3l';
-import {AppLanguage} from 'src/types/AppLanguage';
 
 Sentry.init({
   dsn: SENTRY_DSN,
 });
 
 const JiraApp: React.FC = () => {
-  const [user, , licenseStatus] = useUser();
+  const [user] = useUser();
 
   React.useEffect(() => {
     if (user) {
       document.body.classList.add(user.name.toLowerCase());
     }
   }, [user]);
-
-  if (licenseStatus !== LicenseStatus.VALID) {
-    return <NoLicenseComponent />;
-  }
 
   return <TaskModal />;
 };
@@ -62,10 +56,10 @@ localization
   .then(async () => {
     localization.addLanguage(
       AppLanguage.VIETNAMESE,
-      require('./locales/vi.json'),
+      require('./locales/en.json'),
     );
     localization.addLanguage(AppLanguage.ENGLISH, require('./locales/en.json'));
-    await localization.changeLanguage(AppLanguage.VIETNAMESE);
+    await localization.changeLanguage(AppLanguage.ENGLISH);
     // Inject "Tasks" button
     const ul: Element | null = document.querySelector('ul.aui-nav.__skate');
     if (ul !== null) {

@@ -1,5 +1,6 @@
 {
-  "user.reporter": "",
-  "user.missingReporter": "",
-  "user.reporterSearchPlaceholder": ""
+  "user.welcome": "Welcome, {{name}}!",
+  "user.reporter": "Reporter",
+  "user.missingReporter": "Reporter is required",
+  "user.reporterSearchPlaceholder": "Enter username to search"
 }

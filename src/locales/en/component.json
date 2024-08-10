@@ -1,5 +1,5 @@
 {
   "component.title": "Component",
-  "component.missingComponent": "",
-  "component.searchPlaceholder": ""
+  "component.missingComponent": "Component is required",
+  "component.searchPlaceholder": "Enter keywords to search"
 }

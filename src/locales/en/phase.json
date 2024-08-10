@@ -1,5 +1,5 @@
 {
-  "phase.title": "",
-  "phase.missingPhase": "",
-  "phase.searchPlaceholder": ""
+  "phase.title": "Phase",
+  "phase.missingPhase": "Phase is required",
+  "phase.searchPlaceholder": "Enter keywords to search"
 }

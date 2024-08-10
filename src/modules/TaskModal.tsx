@@ -35,8 +35,10 @@ import {useComponents} from 'src/services/use-components';
 import {usePhases} from 'src/services/use-phases';
 import {useProjects} from 'src/services/use-projects';
 import {useReporters} from 'src/services/use-reporters';
+import {useUser} from 'src/services/use-user';
 import type {GlobalState} from 'src/store';
 import {jiraSlice} from 'src/store/slices/jira-slice';
+import {LicenseStatus} from 'src/types/LicenseStatus';
 
 const formItemProps: FormItemProps = {
   labelCol: {
@@ -50,7 +52,7 @@ const formItemProps: FormItemProps = {
 const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
   const [translate] = useTranslation();
 
-  const {user} = useSelector((state: GlobalState) => state.user);
+  const [user, , licenseStatus] = useUser();
 
   const {isVisible} = useSelector((state: GlobalState) => state.jira);
 
@@ -146,8 +148,13 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
   const [isCreatingTasks, setIsCreatingTasks] = React.useState<boolean>(false);
   const [taskTip, setTaskTip] = React.useState<string>('');
 
+  const isValidLicense = licenseStatus === LicenseStatus.VALID;
+
   const handleSubmit: FormProps['onFinish'] = React.useCallback(
     async (values: JiraForm) => {
+      if (!isValidLicense) {
+        return;
+      }
       if (!isCreatingTasks) {
         setIsCreatingTasks(true);
         const project = projects.find((p) => p.id === values.project);
@@ -170,7 +177,7 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
         form.resetFields();
         await firstValueFrom(
           telegramRepository.sendMessage(
-            `${user?.name} vừa khai ${values.tasks.length} tasks`,
+            `${user?.name} created ${values.tasks.length} tasks`,
           ),
         );
       }
@@ -203,11 +210,28 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
       closeIcon={null}
       destroyOnClose={true}
       open={isVisible}
-      title={`Xin chào ${user?.name}`}
+      title={translate('user.welcome', {name: user?.name})}
       okText={translate('general.create')}
       onOk={form.submit}
+      okButtonProps={{
+        disabled: !isValidLicense || !form.isFieldsTouched(),
+      }}
       cancelText={translate('general.cancel')}
       onCancel={handleCloseModal}>
+      {!isValidLicense && (
+        <div className="mb-4">
+          <span className="text-danger">
+            {translate('license.invalidLicense')}
+          </span>
+          <a
+            target="_blank"
+            className="mx-2"
+            href={chrome.runtime.getURL('assets/thanhtunguet-qr-jira.png')}>
+            Open QR Code
+          </a>
+          <span>to purchase a license</span>
+        </div>
+      )}
       <Spin
         spinning={isLoadingProjects || isCheckingProject || isCreatingTasks}
         tip={isCreatingTasks ? taskTip : translate('general.loading')}>
@@ -472,6 +496,12 @@ const TaskModal: FC<TaskModalProps> = (): JSX.Element => {
                   </Button>
                   <DownloadTemplateButton />
                 </div>
+
+                <span>
+                  To import from Excel, use <code>Ctrl + A / Ctrl + C</code> to
+                  copy the task table from Excel sheet, then use this button to
+                  paste the tasks here.
+                </span>
               </>
             )}
           </Form.List>

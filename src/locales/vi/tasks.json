@@ -1,9 +1,9 @@
 {
-  "tasks.creatingTasks": "Đang tạo tasks: {{p}}%",
-  "tasks.date": "Ngày",
-  "tasks.invalidDate": "Ngày không hợp lệ",
-  "tasks.description": "Mô tả",
-  "tasks.missingDescription": "Bạn chưa nhập mô tả công việc",
-  "tasks.pasteToImport": "Paste từ Excel",
-  "tasks.addTask": "Thêm task"
+  "tasks.creatingTasks": "",
+  "tasks.date": "",
+  "tasks.invalidDate": "",
+  "tasks.description": "",
+  "tasks.missingDescription": "",
+  "tasks.pasteToImport": "",
+  "tasks.addTask": ""
 }

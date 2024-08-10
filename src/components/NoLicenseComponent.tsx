@@ -1,6 +1,6 @@
+import Modal from 'antd/lib/modal';
 import type {FC} from 'react';
 import React from 'react';
-import Modal from 'antd/lib/modal';
 
 const NoLicenseComponent: FC = (): JSX.Element => {
   const [isVisible, setIsVisible] = React.useState<boolean>(true);

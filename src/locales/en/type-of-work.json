@@ -1,5 +1,5 @@
 {
-  "typeOfWork.title": "",
-  "typeOfWork.missingTypeOfWork": "",
-  "typeOfWork.searchPlaceholder": ""
+  "typeOfWork.title": "Type of work",
+  "typeOfWork.missingTypeOfWork": "Type of work is required",
+  "typeOfWork.searchPlaceholder": "Enter name to search"
 }

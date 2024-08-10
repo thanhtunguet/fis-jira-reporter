@@ -1,6 +1,6 @@
 {
-  "project.closedProject": "",
-  "project.title": "Dự án",
-  "project.missingProject": "",
-  "project.searchPlaceholder": ""
+  "project.closedProject": "This project has been closed, please select another one",
+  "project.title": "Project",
+  "project.missingProject": "Project is required",
+  "project.searchPlaceholder": "Enter keywords to search"
 }

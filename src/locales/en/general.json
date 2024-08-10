@@ -1,6 +1,6 @@
 {
-  "general.downloadTemplate": "",
-  "general.create": "",
-  "general.cancel": "",
-  "general.loading": "Đang tải dữ liệu"
+  "general.downloadTemplate": "Template",
+  "general.create": "Create",
+  "general.cancel": "Cancel",
+  "general.loading": "Loading"
 }

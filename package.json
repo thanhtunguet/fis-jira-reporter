@@ -1,7 +1,7 @@
 {
   "name": "jira-automation",
-  "version": "2.1.0",
-  "description": "Công cụ khai Timesheet cho nhân viên FPT - FIS, phát triển bởi Phạm Thanh Tùng & Lê Anh Dũng",
+  "version": "2.2.0",
+  "description": "Công cụ khai Timesheet cho nhân viên FPT - FIS",
   "scripts": {
     "watch": "rm -rf dist .parcel-cache extension.zip && NODE_ENV=development parcel watch manifest.json",
     "build": "rm -rf dist .parcel-cache extension.zip && NODE_ENV=production  parcel build manifest.json --no-source-maps",
